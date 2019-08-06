@@ -1,9 +1,9 @@
 %ordering monomials in grevlex
 cnt = 1;
-sz = 28; %4 -- 15, 6 -- 28
+sz = 45; %4 -- 15, 6 -- 28, 8 -- 45
 arr = zeros(sz, 2);
 
-for d = 0 : 6
+for d = 0 : 8
     for i = 0 : d
         j = d - i;
         arr(cnt, :) = [i, j];
