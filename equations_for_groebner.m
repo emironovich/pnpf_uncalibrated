@@ -4,6 +4,7 @@ function G = equations_for_groebner(F)
     G(2, 1, :) = find_det3([F(1, :, :); F(3:4, :, :)]);
     G(2, 1, :) = find_det3([F(1:2, :, :); F(4, :, :)]);
     G(4, 1, :) = find_det3(F(1:3, :, :));
+    G = squeeze(G);
 end
 
 function d = find_det3(M)
