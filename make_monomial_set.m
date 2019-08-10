@@ -1,14 +1,6 @@
 function [mons, arr] = make_monomial_set(pwr, qx, qy)
-    if pwr == 2
-        sz = 6;
-    elseif pwr == 4
-        sz = 15;
-    elseif pwr == 6
-        sz = 28;
-    elseif pwr == 8
-        sz = 45;
-    end
-    %4 -- 15, 6 -- 28, 8 -- 45 = sz
+    sz = (2 + pwr)*(pwr + 1)/2;
+    %2 -- 6, 4 -- 15, 6 -- 28, 8 -- 45 = sz
     
     cnt = 1;
     arr = zeros(sz, 2);
