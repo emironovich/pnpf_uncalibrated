@@ -18,8 +18,8 @@ function [X, x, y, qx, qy, T] = generate_data_for_macaulay()
     qy = mod((nw*ny - nz*nx)*powermod((nw^2 + nz^2), p - 2, p), p);
     Rxy_q = [1; qx; qy; 0];
     
-    Rz = mod(quat_to_rot(Rz_q), p);
-    Rxy = mod(quat_to_rot(Rxy_q), p);
+    Rz = mod(quat_to_rot_mod(Rz_q, p), p);
+    Rxy = mod(quat_to_rot_mod(Rxy_q, p), p);
     
     T = mod(ceil(1000000*rand(3, 1)), p);
     P = mod([Rz*Rxy, T], p);
