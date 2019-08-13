@@ -1,7 +1,7 @@
 %this function generates points in space, focal distanse, rotation and
 %center of the camera and then projects points onto the prjection plain
 
-function [X, x, y] = generate_data()
+function [X, x, y, R, C, f, P] = generate_data()
     X = rand(3, 4); %space points
     f = rand();
     
