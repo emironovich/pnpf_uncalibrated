@@ -35,10 +35,31 @@ mons = [qx^8, qx^7*qy, qx^6*qy^2, qx^5*qy^3, qx^4*qy^4, qx^3*qy^5, qx^2*qy^6, qx
 disp(G20*mons');
 assert(norm(G20*mons') < e);
 
-%% Test 4:
+%% Test 4: multiplications in mult_for_groebner
+F = init_F(x, y, X, R); %4x3x6
+G4 = equations_for_groebner(F); %4x28
+syms p q;
+sym_mons6 = [ p^6; p^5*q; p^4*q^2; p^3*q^3; p^2*q^4; p*q^5; q^6; p^5; p^4*q; p^3*q^2; p^2*q^3; p*q^4; q^5; p^4; p^3*q; p^2*q^2; p*q^3; q^4; p^3; p^2*q; p*q^2; q^3; p^2; p*q; q^2; p; q; 1];
+G4_sym = G4*sym_mons6;
+G20_sym = sym('g', [20, 1]);
+G20_sym(1:4) = p^2*G4_sym;
+G20_sym(5:8) = p*q*G4_sym;
+G20_sym(9:12) = p*G4_sym;
+G20_sym(13:16) = q*G4_sym;
+G20_sym(17:20) = G4_sym;
+
+G20 = mult_for_groebner(G4); %20x45
+sym_mons8 = [ p^8; p^7*q; p^6*q^2; p^5*q^3; p^4*q^4; p^3*q^5; p^2*q^6; p*q^7; q^8; p^7; p^6*q; p^5*q^2; p^4*q^3; p^3*q^4; p^2*q^5; p*q^6; q^7; p^6; p^5*q; p^4*q^2; p^3*q^3; p^2*q^4; p*q^5; q^6; p^5; p^4*q; p^3*q^2; p^2*q^3; p*q^4; q^5; p^4; p^3*q; p^2*q^2; p*q^3; q^4; p^3; p^2*q; p*q^2; q^3; p^2; p*q; q^2; p; q; 1];
+%disp("coeffs diff");
+for i = 1 : 20
+    %disp(coeffs(G20(i, :)*sym_mons8 - G20_sym(i), [p, q]));
+    assert(isempty(coeffs(G20(i, :)*sym_mons8 - G20_sym(i), [p, q])));
+end
+
+
+%% Test 5: find_f
 F = init_F(x, y, X, R); %4x3x6
 [fc_new, fs_new, n] = find_f(F, qx, qy, e);
 %disp(abs([fc_new - fc, fs_new - fs]));
 assert(norm([fc_new - fc, fs_new - fs]) < e);
-
 
