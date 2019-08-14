@@ -42,7 +42,12 @@ function [mons, arr] = make_monomial_set(pwr, qx, qy, form) %'r' -- row, 'c' -- 
     
     %creating an array of symbolic monomials insted of just array of
     %vectors of powers
-    mons = sym('m', [sz, 1]);
+    if form == 'r'
+        mons = sym('m', [1, sz]);
+    elseif form == 'c'
+        mons = sym('m', [sz, 1]);
+    end
+    
     for i = 1 : sz
         mons(i) = qx^arr(i, 1)*qy^arr(i, 2);
     end
