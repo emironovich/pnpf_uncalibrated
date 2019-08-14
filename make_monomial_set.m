@@ -1,4 +1,4 @@
-function [mons, arr] = make_monomial_set(pwr, qx, qy)
+function [mons, arr] = make_monomial_set(pwr, qx, qy, form) %'r' -- row, 'c' -- column
     sz = (2 + pwr)*(pwr + 1)/2;
     %2 -- 6, 4 -- 15, 6 -- 28, 8 -- 45 = sz
     
