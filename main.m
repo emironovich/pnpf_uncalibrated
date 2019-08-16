@@ -53,7 +53,6 @@ for i = 1 : 10
 %         -2*qy, 2*qx, 1 - qx^2 - qy^2];
     
     %li = find_lamda(R, fc, fs, Xi, Xj, xi, xj) -- signature
-    %todo: find out if indecies of X and x matter for this (or may be I need y)
     lambda1 = find_lamda(R_eval, fc, fs, X(:, 1), X(:, 2), x(1), x(2));
     %T = find_translation(R, fc, fs, li, Xi, xi, yi)
     T = find_translation(R_eval, fc, fs, lambda1, X(:, 1), x(1), y(1));
@@ -62,6 +61,12 @@ for i = 1 : 10
          fs,  fc, 0;
            0,  0, 1];
     P = [K*R_eval, T];
+    
+    p4 = P*[X(:, 4); 1];
+    y4 = p4(2)/p4(3);
+    
+    disp(abs(y4 - y(4)));
+    
     if abs(qx-genqx) < e && abs(qy - genqy) < e
         disp("qx    qy:");
         disp([qx, qy]);
