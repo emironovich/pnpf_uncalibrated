@@ -26,9 +26,6 @@ C = A\B;
 M = make_mult_matrix(C);
 
 [~, D ,W] = eig(M);
-for i = 1 : 10
-    fprintf("(%d, %d)\n", D(i, i), W(9, i) / W(10, i));
-end
 
 for i = 1 : 10
     
@@ -44,33 +41,40 @@ for i = 1 : 10
     [fc, fs, n] = find_f(F, qx, qy, e);
 
     %need to deal with different number of solutions
-
-    R_eval = [1 + qx^2 - qy^2, 2*qx*qy, 2*qy;
-        2*qx*qy, qy^2 - qx^2 + 1, -2*qx;
-        -2*qy, 2*qx, 1 - qx^2 - qy^2];
+     %R_eval = quat_to_rot([1, qx, qy, 0]);
+     
+     s = 1/(1 + qx^2 + qy^2);
+     R_eval = [1 - 2*s*qy^2, 2*s*qx*qy, 2*s*qy; 
+        2*s*qx*qy, 1 - 2*s*qx^2, -2*s*qx;
+        -2*s*qy, 2*s*qx, 1 - 2*s*(qx^2 + qy^2)];
+    
+%     R_eval = [1 + qx^2 - qy^2, 2*qx*qy, 2*qy;
+%         2*qx*qy, qy^2 - qx^2 + 1, -2*qx;
+%         -2*qy, 2*qx, 1 - qx^2 - qy^2];
+    
     %li = find_lamda(R, fc, fs, Xi, Xj, xi, xj) -- signature
     %todo: find out if indecies of X and x matter for this (or may be I need y)
     lambda1 = find_lamda(R_eval, fc, fs, X(:, 1), X(:, 2), x(1), x(2));
     %T = find_translation(R, fc, fs, li, Xi, xi, yi)
     T = find_translation(R_eval, fc, fs, lambda1, X(:, 1), x(1), y(1));
-
     f = sqrt(fc^2 + fs^2);
     K = [fc, -fs, 0;
          fs,  fc, 0;
            0,  0, 1];
     P = [K*R_eval, T];
-    
-    disp("qx    qy:");
-    disp([qx, qy]);
-    disp([genqx, genqy]);
-    
-    disp("fc    fs:");
-    disp([fc, fs]);
-    disp([genfc, genfs]);
-    
-    disp("T:");
-    disp(T');
-    disp(genT');
+    if abs(qx-genqx) < e && abs(qy - genqy) < e
+        disp("qx    qy:");
+        disp([qx, qy]);
+        disp([genqx, genqy]);
+
+        disp("fc    fs:");
+        disp([fc, fs]);
+        disp([genfc, genfs]);
+
+        disp("T:");
+        disp(T');
+        disp(genT');
+    end
 end
 
 
