@@ -1,4 +1,4 @@
-function [X, x, y, fc, fs, qx, qy, T] = generate_data_with_new_parametrization()
+function [X, x, y, fc, fs, qx, qy, T, P] = generate_data_with_new_parametrization()
     X = rand(3, 4)*100; %four 3d points
     R_q = rand(4, 1); %quaternion for rotation
     nw = R_q(1);

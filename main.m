@@ -5,7 +5,7 @@
 
 e = 1e-8; %acccuracy
 %[X, x, y] = generate_data();
-[X, x, y, genfc, genfs, genqx, genqy, genT] = generate_data_with_new_parametrization();
+[X, x, y, genfc, genfs, genqx, genqy, genT, genP] = generate_data_with_new_parametrization();
 
 R = init_R();
 F = init_F(x, y, X, R); %4x3x6

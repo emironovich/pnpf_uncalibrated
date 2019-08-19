@@ -1,5 +1,5 @@
 %Tests
-[X, x, y, fc, fs, qx, qy, T] = generate_data_with_new_parametrization();
+[X, x, y, fc, fs, qx, qy, T, P] = generate_data_with_new_parametrization();
 e = 1e-6;
 R = init_R();
 
