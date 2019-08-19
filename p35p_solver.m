@@ -8,12 +8,15 @@ function [solution_num, f_sol, R_sol, T_sol] = p35p_solver(X, x, y, e)
     C = A\B;
     M = make_mult_matrix(C);
 
-    [~, D ,W] = eig(M);
+    [W,D] = eig(M');
 
     solution_num = 0;
-    f_sol = 0;
-    R_sol = zeros(3);
-    T_sol = zeros(3, 1);
+    f_sol = zeros(1, 0);
+    coder.varsize('f_sol', [1 10], [0 1]);
+    R_sol = zeros(3, 3, 0);
+    coder.varsize('R_sol', [3 3 10], [0 0 1]);
+    T_sol = zeros(3, 0);
+    coder.varsize('T_sol', [3 10], [0 1]);
     
     for i = 1 : 10
         qx = D(i, i);
@@ -41,7 +44,7 @@ function [solution_num, f_sol, R_sol, T_sol] = p35p_solver(X, x, y, e)
             %T = find_translation(R, fc, fs, li, Xi, xi, yi)
             T = find_translation(R_xy, fc, fs, lambda1, X(:, 1), x(1), y(1));
             
-            f = sqrt(fc^2 + fs^2);
+            f = hypot(fs, fc);
             K = [fc, -fs, 0;
                  fs,  fc, 0;
                    0,  0, 1];
@@ -52,13 +55,17 @@ function [solution_num, f_sol, R_sol, T_sol] = p35p_solver(X, x, y, e)
             
             if abs(y4 - y(4)) < e
                 solution_num = solution_num + 1;
-                f_sol(solution_num) = f;
                 R_z = [fc/f, -fs/f, 0;
                        fs/f,  fc/f, 0;
                        0,        0, 1];
-                R_sol(:, 3*solution_num - 2 : 3*solution_num) = R_z*R_xy;
-                T_sol(:, solution_num) = T;
-                
+                R_curr = R_z*R_xy;
+                f_sol = [f_sol, f];
+                if solution_num == 1
+                    R_sol = R_curr;
+                else
+                    R_sol = cat(3, R_sol, R_curr);
+                end
+                T_sol = [T_sol, T];
             end
         end
     end

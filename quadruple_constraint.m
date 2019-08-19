@@ -12,8 +12,8 @@ function F_row = quadruple_constraint(i, j, k, x, y, X, R)
 end
 
 function sum = mult_R(R, i, X)
-    sum = 0;
+    sum = zeros(6,1);
     for j = 1 : 3
-        sum = sum + R(i, j, :) * X(j);
+        sum = sum + squeeze(R(i, j, :)) * X(j);
     end
 end
