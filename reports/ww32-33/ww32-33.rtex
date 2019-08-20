@@ -1,0 +1,196 @@
+\documentclass[notheroems,aspectratio=169]{beamer}
+
+\usepackage{rotating}
+\usepackage{cmap}
+\usepackage[T2A]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{mathtext}
+\usepackage{commath}
+\usepackage{amsfonts}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{algorithm2e}
+\usepackage{mathtools}
+\usepackage{stackrel}
+\usepackage{indentfirst}
+\usepackage{geometry}
+\usepackage{tikz}
+\usepackage{tkz-euclide}
+\usetkzobj{all}
+\usetikzlibrary{arrows,positioning}
+\usetikzlibrary{shapes,snakes}
+\usetikzlibrary{shapes.multipart}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{caption}
+\usepackage{hyperref}
+\usepackage{setspace}
+\usepackage{float}
+\usepackage{bbm}
+\usepackage{listings}
+\usepackage[section]{placeins}
+\DeclarePairedDelimiter{\ceil}{\lceil}{\rceil}
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
+\mode<presentation>
+{
+    \usetheme{Warsaw}
+    \usecolortheme{whale}
+    \setbeamercovered{transparent}
+}
+\setbeamercovered{invisible}
+\setbeamertemplate{navigation symbols}{}
+\usepackage{physics}
+
+\addtobeamertemplate{navigation symbols}{}{%
+    \usebeamerfont{footline}%
+    \usebeamercolor[fg]{footline}%
+    \hspace{1em}%
+    \insertframenumber/\inserttotalframenumber
+}
+
+
+
+\makeatletter \renewcommand\d[1]{\ensuremath{%
+  \;\mathrm{d}#1\@ifnextchar\d{\!}{}}}
+ \makeatother
+%% for inline R code: if the inline code is not correctly parsed, you will see a message
+\newcommand{\rinline}[1]{SOMETHING WRONG WITH knitr}
+\newcommand{\dquad}{\,\dif x_1\,\dif x_2\, \dif x_3\, \dif x_4\,}
+%% begin.rcode setup, include=FALSE
+% library(knitr)
+% library(lattice)
+% library(latticeExtra)
+% library(reshape)
+% library(png)
+% data.single <- read.csv('stats_single_mex.csv')
+% data.double <- read.csv('stats_double_mex.csv')
+%% end.rcode
+
+\title{Status of fast localization (WW32-33)}
+\author{Elizaveta Mironovich}
+\begin{document}
+\maketitle
+
+\section{Status}
+\begin{frame}
+    During WW32-33, the following tasks were completed:
+    \begin{itemize}
+        \item Initial implementation of P3.5P algorithm in MATLAB
+        \item Evaluation on noize-free synthetic data
+        \item Evaluation of code obtained with MATLAB Coder
+    \end{itemize}
+\end{frame}
+
+\section{Results}
+\begin{frame}
+    The implemented algorithm provides estimates for camera pose $\hat{R}$ and $\hat{C}$, as well as focal length $\hat{f}$.
+
+    The following metrics were evaluated:
+    \begin{itemize}
+        \item Relative accuracy of focal length estimation $\Delta_f=\frac{\left\lvert f - \hat{f}\right\rvert}{f}$
+        \item Relative accuracy of camera center translation estimation $\Delta_C = \frac{\left\lVert C - \hat{C}\right\rVert}{\left\lVert C\right\rVert}$
+        \item Accuracy of orientation estimation as [normalized] Frobenius norm of the difference $\Delta_R = \frac{\left\lVert R - \hat{R}\right\rVert_F}{3}$
+        \item Execution time $t$
+    \end{itemize}
+
+    All time measurements correspond to a single-thread of Intel Xeon 8180 CPU.
+\end{frame}
+
+\begin{frame}{Double-precision}
+\begin{figure}
+\centering
+\begin{subfigure}{0.23\textwidth}
+%% begin.rcode df.double, include=T, echo=F, fig.height=2.4, fig.width=3
+%   histogram(~dF, data=data.double, xlab='Relative error', scales=list(x=list(log=T)))
+%% end.rcode
+\caption{$\Delta_f$}
+\end{subfigure}
+\begin{subfigure}{0.23\textwidth}
+%% begin.rcode dr.double, include=T, echo=F, fig.height=2.4, fig.width=3
+%   histogram(~dR, data=data.double, xlab='Error', scales=list(x=list(log=T)))
+%% end.rcode
+\caption{$\Delta_R$}
+\end{subfigure}
+\begin{subfigure}{0.23\textwidth}
+%% begin.rcode dc.double, include=T, echo=F, fig.height=2.4, fig.width=3
+%   histogram(~dC, data=data.double, xlab='Relative error', scales=list(x=list(log=T)))
+%% end.rcode
+\caption{$\Delta_C$}
+\end{subfigure}
+\begin{subfigure}{0.23\textwidth}
+%% begin.rcode t.double, include=T, echo=F, fig.height=2.4, fig.width=3
+%   histogram(~dt, data=data.double, xlab='Execution time (s)', scales=list(x=list(log=T)))
+%% end.rcode
+\caption{$t$}
+\end{subfigure}
+\caption{Evaluation results (noize-free, double-precision)}
+\end{figure}
+
+Execution time
+\begin{itemize}
+    \item  median $\rinline{round(median(data.double$dt*1000),digits=2)}ms$
+    \item  mean $\rinline{round(mean(data.double$dt*1000),digits=2)}ms$
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Single-precision}
+\begin{figure}
+\centering
+\begin{subfigure}{0.23\textwidth}
+%% begin.rcode df.single, include=T, echo=F, fig.height=2.4, fig.width=3
+%   histogram(~dF, data=data.single, xlab='Relative error', scales=list(x=list(log=T)))
+%% end.rcode
+\caption{$\Delta_f$}
+\end{subfigure}
+\begin{subfigure}{0.23\textwidth}
+%% begin.rcode dr.single, include=T, echo=F, fig.height=2.4, fig.width=3
+%   histogram(~dR, data=data.single, xlab='Error', scales=list(x=list(log=T)))
+%% end.rcode
+\caption{$\Delta_R$}
+\end{subfigure}
+\begin{subfigure}{0.23\textwidth}
+%% begin.rcode dc.single, include=T, echo=F, fig.height=2.4, fig.width=3
+%   histogram(~dC, data=data.single, xlab='Relative error', scales=list(x=list(log=T)))
+%% end.rcode
+\caption{$\Delta_C$}
+\end{subfigure}
+\begin{subfigure}{0.23\textwidth}
+%% begin.rcode t.single, include=T, echo=F, fig.height=2.4, fig.width=3
+%   histogram(~dt, data=data.single, xlab='Execution time (s)', scales=list(x=list(log=T)))
+%% end.rcode
+\caption{$t$}
+\end{subfigure}
+\caption{Evaluation results (noize-free, single-precision)}
+\end{figure}
+
+Execution time
+\begin{itemize}
+    \item  median $\rinline{round(median(data.single$dt*1000),digits=2)}ms$
+    \item  mean $\rinline{round(mean(data.single$dt*1000),digits=2)}ms$
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Conclusion}
+    \begin{itemize}
+        \item The implemented algorithm exhibits reasonable accuracy in the noise-free case
+        \item Timings in single- and double- precision modes are pretty similar due to
+            \begin{itemize}
+                \item Lots of scalar code in elimination template preparation stage
+                \item Several conversions between double- and single-precision are still present in the generated C-code
+            \end{itemize}
+        \item Overall, performance looks promising, even in a single-precision mode
+    \end{itemize}
+\end{frame}
+
+
+\section{Plan for WW34-35}
+\begin{frame}
+    \begin{itemize}
+        \item Evaluate both single- and double-precision versions with synthetic noise
+        \item Depending on results of the evaluation --- either provide code suitable for porting to the accelerator, or start checking another pose+focal approach
+    \end{itemize}
+\end{frame}
+
+\end{document}

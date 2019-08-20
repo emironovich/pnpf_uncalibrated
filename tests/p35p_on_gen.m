@@ -1,17 +1,14 @@
-N = 100000;
-%max_diff = -1;
-sum = 0;
-zero_solutions = 0;
-valid_solutions = 0;
+N = 1000000;
 
-accuracy = zeros(4, N);
+stats = zeros(5, N);
+valid = false(N, 1);
 
 tic
-for ind = 1 : N
+parfor ind = 1:N
     [X, x, y, R_gen, C_gen, f_gen, P] = generate_data();
     e = 1e-6;
     start = tic;
-    [solution_num, f_sol, R_sol, T_sol] = p35p_solver(X, x, y, e);
+    [solution_num, f_sol, R_sol, T_sol] = p35p_solver_mex(X, x, y, e);
     dt = toc(start);
     
     min_diff = inf;
@@ -40,16 +37,17 @@ for ind = 1 : N
     
     
     if solution_num ~= 0
-        valid_solutions = valid_solutions + 1;
-        accuracy(:, valid_solutions) = [min_diff / f_gen; diff_R; diff_C; dt];
-    else
-        zero_solutions = zero_solutions + 1;
+        stats(:, ind) = [min_diff / f_gen; diff_R; diff_C; dt; solution_num];
+        valid(ind) = true;
     end
 end
 toc
 
-accuracy = accuracy(:, 1:valid_solutions);
-f=fopen('stats.csv', 'wt');
-fprintf(f, 'dF,dR,dC,dt\n');
+zero_solutions = numel(find(~valid));
+
+stats = stats(:, valid);
+filename = 'stats_double_mex.csv';
+f=fopen(filename, 'wt');
+fprintf(f, 'dF,dR,dC,dt,N\n');
 fclose(f);
-dlmwrite('stats.csv', accuracy', '-append');
+dlmwrite(filename, stats', '-append');
