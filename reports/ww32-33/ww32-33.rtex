@@ -66,6 +66,7 @@
 % library(png)
 % data.single <- read.csv('stats_single_mex.csv')
 % data.double <- read.csv('stats_double_mex.csv')
+% N <- 1e6
 %% end.rcode
 
 \title{Status of fast localization (WW32-33)}
@@ -180,6 +181,7 @@ Execution time
                 \item Lots of scalar code in elimination template preparation stage
                 \item Several conversions between double- and single-precision are still present in the generated C-code
             \end{itemize}
+        \item In single-precision mode less solutions pass $.5$-point check: $\rinline{round(nrow(data.single)/N, digits=3)*100}\%$ vs  $\rinline{round(nrow(data.double)/N, digits=3)*100}\%$
         \item Overall, performance looks promising, even in a single-precision mode
     \end{itemize}
 \end{frame}

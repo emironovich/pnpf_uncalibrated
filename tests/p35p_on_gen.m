@@ -3,12 +3,18 @@ N = 1000000;
 stats = zeros(5, N);
 valid = false(N, 1);
 
+p35p = @(X,x,y,e)p35p_solver(X,x,y,e);
+% uncomment for MEX-based solver
+%p35p = @(X,x,y,e)p35p_solver_mex(X,x,y,e);
+eps = 1e-6;
+% uncomment for single-precision evaluation
+%eps = 1e-1;
+
 tic
 parfor ind = 1:N
     [X, x, y, R_gen, C_gen, f_gen, P] = generate_data();
-    e = 1e-6;
     start = tic;
-    [solution_num, f_sol, R_sol, T_sol] = p35p_solver_mex(X, x, y, e);
+    [solution_num, f_sol, R_sol, T_sol] = p35p(X, x, y, eps);
     dt = toc(start);
     
     min_diff = inf;
