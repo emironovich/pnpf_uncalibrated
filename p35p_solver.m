@@ -53,7 +53,7 @@ function [solution_num, f_sol, R_sol, T_sol] = p35p_solver(X, x, y, e)
             p4 = P*[X(:, 4); 1];
             y4 = p4(2)/p4(3);
             
-            if abs(y4 - y(4)) < e
+            if abs(y4 - y(4)) < 0.01*f
                 solution_num = solution_num + 1;
                 R_z = [fc/f, -fs/f, 0;
                        fs/f,  fc/f, 0;
