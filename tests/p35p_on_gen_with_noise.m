@@ -15,7 +15,7 @@ for d = 0:0.5:5
 
     tic
     parfor ind = 1:N
-        [X, x, y, R_gen, C_gen, f_gen, P] = generate_data_with_noise(200+1800*rand(), d);
+        [X, x, y, R_gen, C_gen, f_gen, P] = generate_data(d);
         start = tic;
         [solution_num, f_sol, R_sol, T_sol] = p35p(X, x, y, eps);
         dt = toc(start);
