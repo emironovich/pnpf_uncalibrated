@@ -1,4 +1,4 @@
-function solve_3Q3(c) %c -- 3x10 coefficients matrix
+function [n, xs, ys, zs] = solve_3Q3(c, e) %c -- 3x10 coefficients matrix
 %SOLVE_3Q3 Summary of this function goes here
 %   Detailed explanation goes here
     A = find_A(c);
@@ -6,7 +6,23 @@ function solve_3Q3(c) %c -- 3x10 coefficients matrix
     for i = 1 : 3
         P(:, :, i) = A\P(:, :, i);
     end
-
+    M = find_M(P);
+    pol = find_det_M(M);
+    xs_complex = roots(pol');
+    xs = zeros(1, length(xs_complex));
+    n = 0;
+    for i = 1 : length(xs_complex)
+        if imag(xs_complex) < e
+            n = n + 1;
+            xs(n) = xs_complex(i);
+        end
+    end
+    xs = xs(1:n);
+    ys = zeros(1, n);
+    zs = zeros(1, n);
+    for i = 1 : n
+        [ys(i), zs(i)] = find_yz(M, xs(i));
+    end
 end
 
 function A = find_A(c)
@@ -22,5 +38,15 @@ function P = find_P(c)
         P(i, 2, :) = [0, c(i, 5), c(i, 9)];        %z
         P(i, 3, :) = [c(i, 1), c(i, 7), c(i, 10)]; %1
     end
+end
+
+function d = find_det_M(M)
+    d = conv(M(:, 1, 1), find_det2(M(:, 2:3, 2:3))) - ...
+        conv(M(:, 1, 2), find_det2(cat(3, M(:, 1:2, 1), M(:, 1:2, 3)))) + ...
+        conv(M(:, 1, 3), find_det2(M(:, 1:2, 1:2)));
+end
+
+function d = find_det2(M)
+    d = conv(M(:, 1, 1), M(:, 2, 2)) - conv(M(:, 1, 2), M(:, 2, 1));
 end
 
