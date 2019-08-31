@@ -63,6 +63,8 @@
 %names(data.single) <- c('stdev0.0', 'stdev0.5', 'stdev1.0', 'stdev1.5', 'stdev2.0', 'stdev2.5', 'stdev3.0', 'stdev3.5', 'stdev4.0', 'stdev4.5', 'stdev5.0');
 %data.double <- read.csv('noisy_stats_double_mex.csv', header = FALSE);
 %names(data.double) <- c('stdev0.0', 'stdev0.5', 'stdev1.0', 'stdev1.5', 'stdev2.0', 'stdev2.5', 'stdev3.0', 'stdev3.5', 'stdev4.0', 'stdev4.5', 'stdev5.0');
+%data.3Q3 <- read.csv('3Q3_stats.csv')
+%data.P4Pf <- read.csv('P4Pf_focus_stats.csv')
 % N <- 1e6
 %% end.rcode
 
@@ -75,14 +77,16 @@
 \begin{frame}
     During WW34-35, the following tasks were completed:
     \begin{itemize}
-        \item Evaluation on synthetic data with zero-mean Gaussian noise
+        \item Evaluation of the P3.5P algorithm on synthetic data with zero-mean Gaussian noise
+        \item Initial implementation of 3Q3 algorithm without the consideration of degenerate cases
+	\item Recovering of the focal length in a non-degenerate case using P4Pf algorithm 
     \end{itemize}
 \end{frame}
 
 \section{Results}
+\subsection{P3.5P}
 \begin{frame}
-    Relative accuracy of focal length estimation $\Delta_f=\frac{\left\lvert f - \hat{f}\right\rvert}{f}$ of P3.5P algorithm was evaluated with different standard deviation on single- and double-precision versions of the algorithm  
-
+    Relative accuracy of focal length estimation $\Delta_f=\frac{\left\lvert f - \hat{f}\right\rvert}{f}$ of P3.5P algorithm was evaluated with different standard deviation on single- and double-precision versions of the algorithm.
 \end{frame}
 
 \begin{frame}{Density plots}
@@ -150,8 +154,67 @@
 \end{figure}
 \end{frame}
 
+\subsection{3Q3}
+\begin{frame}
+    3Q3 algorithm is supposed to efficiently find all intersections of three quadrics.
+    It is used for solving P4Pf problem. The perfomance of the 3Q3 algorithm implementation was evaluated on generated data in double precision.
+    
+    Here is an evaluation of relative accuracy $\Delta_X = \frac{\min_{X\in S}\||X - X^*\|}{\|X^*\|}$, where $S\subset \mathbb{R}$ is a set of solutions returned by 3Q3 solver and $X^*$ is a solution for which the system of equations was generated:
+    
+    \begin{figure}
+	\begin{subfigure}[b]{0.4\textwidth}
+        %% begin.rcode message=F, warning=F, echo=F, fig.height=2.4, fig.width=3
+        % ggplot(data.3Q3, aes(x=dx)) + geom_histogram() + scale_x_log10() + xlab("relative error")
+        %% end.rcode
+	\end{subfigure}
+   \end{figure} 
+    
+\end{frame}
+
+\subsection{P4Pf}
+\begin{frame}
+%%begin.rcode echo=F
+%focal.p3.5p  <- data.frame(data.double$stdev0.0)
+%names(focal.p3.5p) <- c('df')
+%focal.p3.5p$algorithm <- 'P3.5P'
+
+%focal.p4p  <- data.frame(data.P4Pf$df)
+%names(focal.p4p) <- c('df')
+%focal.p4p$algorithm <- 'P4P.3Q3'
+
+
+%focal_double <- rbind(focal.p3.5p , focal.p4p )
+%focal_double <- focal_double[!(focal_double$df<0),]
+%%end.rcode
+   The goal of the P4Pf algorithm is to provide estimates for camera pose and focal length~$f$. Current implementation thus far obtains only focal length estimation for non-degenerate cases which was evaluated on generated data by relative accuracy $\Delta_f = \frac{|f - f^*|}{|f^*|}$:
+   \begin{figure}
+	\begin{subfigure}[b]{0.4\textwidth}
+        %% begin.rcode message=F, warning=F, echo=F, fig.height=2.4, fig.width=3
+        % ggplot(data.P4Pf, aes(x=df)) + geom_histogram() + scale_x_log10() + xlab("relative error (P4P+3Q3)")
+        %% end.rcode
+	%\caption{$\Delta_f$ for P4Pf+3Q3}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.475\textwidth}
+	%%begin.rcode message=F, warning=F, echo=F, fig.height=2.4, fig.width=4
+	%ggplot(focal_double, aes(df, fill = algorithm)) + geom_density(alpha = 0.2) + scale_x_log10() + xlab("relative error (comparison)") 
+	%%end.rcode
+	%\capion{$\Delta_f$}	
+	\end{subfigure}
+   \caption{Evaluaiton results of $\Delta_f$ (noize-free, double-precision)}	
+   \end{figure} 
+\end{frame}
+
+\begin{frame}{Conclusion}
+	Even though the perfomance of the P3.5P algorithm is satisfactory we expect 3Q3 algorithm to be faster even though the latter may return more solution which would slow down Sample Consensus method. 
+\end{frame}
+
 \section{Plan for WW34-35}
 \begin{frame}
+  \begin{itemize}
+	\item Add consideration of degenerate cases to 3Q3
+	\item Add retrieving camera pose to the current implementation of P4Pf algorithm
+	\item Compare P4Pf+3Q3 and P3.5P by speed and accuracy in single-precision
+  \end{itemize}
 \end{frame}
 
 \end{document}
