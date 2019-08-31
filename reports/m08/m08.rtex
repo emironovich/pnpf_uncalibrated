@@ -1,0 +1,81 @@
+\documentclass[notheroems,aspectratio=169]{beamer}
+
+\usepackage{rotating}
+\usepackage{cmap}
+\usepackage[T2A]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{mathtext}
+\usepackage{commath}
+\usepackage{amsfonts}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{algorithm2e}
+\usepackage{mathtools}
+\usepackage{stackrel}
+\usepackage{indentfirst}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{caption}
+\usepackage{hyperref}
+\usepackage{setspace}
+\usepackage{float}
+\usepackage{bbm}
+\usepackage{listings}
+\usepackage[section]{placeins}
+\DeclarePairedDelimiter{\ceil}{\lceil}{\rceil}
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
+\mode<presentation>
+{
+    \usetheme{Warsaw}
+    \usecolortheme{whale}
+    \setbeamercovered{transparent}
+}
+\setbeamercovered{invisible}
+\setbeamertemplate{navigation symbols}{}
+\usepackage{physics}
+
+\addtobeamertemplate{navigation symbols}{}{%
+    \usebeamerfont{footline}%
+    \usebeamercolor[fg]{footline}%
+    \hspace{1em}%
+    \insertframenumber/\inserttotalframenumber
+}
+
+
+
+\makeatletter \renewcommand\d[1]{\ensuremath{%
+  \;\mathrm{d}#1\@ifnextchar\d{\!}{}}}
+ \makeatother
+%% for inline R code: if the inline code is not correctly parsed, you will see a message
+\newcommand{\rinline}[1]{SOMETHING WRONG WITH knitr}
+\newcommand{\dquad}{\,\dif x_1\,\dif x_2\, \dif x_3\, \dif x_4\,}
+%% begin.rcode setup, include=FALSE
+% library(knitr)
+% library(lattice)
+% library(latticeExtra)
+% library(reshape)
+% library(png)
+% library(ggplot2)
+% N <- 1e6
+%% end.rcode
+
+\title{Status of fast localization (August)}
+\author{Elizaveta Mironovich}
+\begin{document}
+\maketitle
+
+\section{Status}
+\begin{frame}
+    In August the following tasks were completed:
+    \begin{itemize}
+	\item Implementation of P3.5P algorithm in MATLAB
+	\item Evaluation of P3.5P on synthetic data with zero-mean Gaussian noise and with no noize
+        \item Initial implementation of 3Q3 and partially P4Pf
+	\item Comparison of focal length estimation P4Pf+3Q3 and P3.5P in double-precision
+    \end{itemize}
+\end{frame}
+
+\end{document}
