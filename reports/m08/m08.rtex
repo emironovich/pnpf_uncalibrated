@@ -1,5 +1,8 @@
-\documentclass[notheroems,aspectratio=169]{beamer}
+\documentclass[12pt]{article}
 
+\usepackage[margin=1.2in]{geometry}
+\usepackage{setspace}
+\usepackage[backend=bibtex,style=verbose-trad2]{biblatex}
 \usepackage{rotating}
 \usepackage{cmap}
 \usepackage[T2A]{fontenc}
@@ -16,6 +19,12 @@
 \usepackage{stackrel}
 \usepackage{indentfirst}
 \usepackage{geometry}
+\usepackage{tikz}
+\usepackage{tkz-euclide}
+\usetkzobj{all}
+\usetikzlibrary{arrows,positioning}
+\usetikzlibrary{shapes,snakes}
+\usetikzlibrary{shapes.multipart}
 \usepackage{graphicx}
 \usepackage{subcaption}
 \usepackage{caption}
@@ -25,31 +34,8 @@
 \usepackage{bbm}
 \usepackage{listings}
 \usepackage[section]{placeins}
-\DeclarePairedDelimiter{\ceil}{\lceil}{\rceil}
-\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
-\mode<presentation>
-{
-    \usetheme{Warsaw}
-    \usecolortheme{whale}
-    \setbeamercovered{transparent}
-}
-\setbeamercovered{invisible}
-\setbeamertemplate{navigation symbols}{}
-\usepackage{physics}
 
-\addtobeamertemplate{navigation symbols}{}{%
-    \usebeamerfont{footline}%
-    \usebeamercolor[fg]{footline}%
-    \hspace{1em}%
-    \insertframenumber/\inserttotalframenumber
-}
-
-
-
-\makeatletter \renewcommand\d[1]{\ensuremath{%
-  \;\mathrm{d}#1\@ifnextchar\d{\!}{}}}
- \makeatother
-%% for inline R code: if the inline code is not correctly parsed, you will see a message
+% for inline R code: if the inline code is not correctly parsed, you will see a message
 \newcommand{\rinline}[1]{SOMETHING WRONG WITH knitr}
 \newcommand{\dquad}{\,\dif x_1\,\dif x_2\, \dif x_3\, \dif x_4\,}
 %% begin.rcode setup, include=FALSE
@@ -59,23 +45,257 @@
 % library(reshape)
 % library(png)
 % library(ggplot2)
+% data.single_clear <- read.csv('stats_single_mex.csv')
+% data.double_clear <- read.csv('stats_double_mex.csv')
+%data.single <- read.csv('noisy_stats_single_mex.csv', header = FALSE);
+%names(data.single) <- c('stdev0.0', 'stdev0.5', 'stdev1.0', 'stdev1.5', 'stdev2.0', 'stdev2.5', 'stdev3.0', 'stdev3.5', 'stdev4.0', 'stdev4.5', 'stdev5.0');
+%data.double <- read.csv('noisy_stats_double_mex.csv', header = FALSE);
+%names(data.double) <- c('stdev0.0', 'stdev0.5', 'stdev1.0', 'stdev1.5', 'stdev2.0', 'stdev2.5', 'stdev3.0', 'stdev3.5', 'stdev4.0', 'stdev4.5', 'stdev5.0');
+%data.3Q3 <- read.csv('3Q3_stats.csv')
+%data.P4Pf <- read.csv('P4Pf_focus_stats.csv')
 % N <- 1e6
 %% end.rcode
 
-\title{Status of fast localization (August)}
-\author{Elizaveta Mironovich}
+
+\bibliography{biblio}
 \begin{document}
+\title{August report}
+\author{Elizaveta Mironovich}
+%\date{}
+
 \maketitle
 
-\section{Status}
-\begin{frame}
-    In August the following tasks were completed:
-    \begin{itemize}
-	\item Implementation of P3.5P algorithm in MATLAB
-	\item Evaluation of P3.5P on synthetic data with zero-mean Gaussian noise and with no noize
-        \item Initial implementation of 3Q3 and partially P4Pf
-	\item Comparison of focal length estimation P4Pf+3Q3 and P3.5P in double-precision
+
+\section{Abstract}
+
+The goal of my work is to implement a good algorithm that solves the problem of localization of a camera and evaluation of its focal length. 
+Two algorithms were chosen to be considered: P3.5Pf by \cite{wu} and P4Pf with 3Q3 by \cite{kukelova}. 
+The first algorithm was implemented on MATLAB and transformed using MATLAB Coder. 
+It showed good accuracy results but its speed results were only satisfactory, so the decision have been made to consider the second algorithm that could be faster.
+The second algorithm was implemented up until the estimation of the focal length in MATLAB. 
+The implementation showed comparable results with the first implementation in double-precision.
+So the plan is to finish the 3Q3 implementation and compare the time and accuracy performance of the two algorithms in single-precision.
+
+
+\section{Problem definition}
+
+Perspective-n-Point (PnP) is a problem where given $n$ correspondencies between image points and points in space are used to evaluate unknown camera parameters. 
+In our case these parameters are rotation $\hat{R}$, translation $\hat{T}$ and a focal distance $\hat{f}$ (in terms of a classic pin-hole model). 
+
+\section{P3.5Pf}
+\subsection{Algorithm overview}
+
+The main intrest of the paper \cite{wu} is that the algorithm uses a minimal amount of point coerrespondencies, which is 3.5, where one half of a point means that only one of the coordinates from the correspondace needs to be used to find solutions. Extra coordinate is used in the end to filter candidate solutions by checking the reprojection error. Such filtration almost always provides one solution on good data and zero solutions for outliers which considerably fastens RANSAC application.
+
+%By changing classic parametrization and by eliminating variables the author finds themself with %a system of 4 degree 6 polynomials with 2 unknowns that they solved by using standard Gr\"{o}%bner basis.
+
+%In this paper the author rejected the usual parametrization of a camera matrix $P = KR[I|-C]$  %and replaced it with another one, thus removing extra trivial solutions and solutions with the %same projection matrix, but negated focal length and $180^{\circ}$ translation around $z$-axis.
+%They then parametrized matrix R using quaternions and got a problem with $7$ unknowns to solve. 
+%After variable elimination they found themselves with a system of 4 degree 6 polynomials with 2 unknowns that they solved by using standard Gr\"{o}bner basis.
+%The candidate solutions are then filtered by 
+
+    %The implemented algorithm provides estimates for camera pose $\hat{R}$ and $\hat{C}$, as well as focal length $\hat{f}$.
+
+%\subsection{Implementation performance}
+    The general case of the algorithm was implemented in MATLAB. 
+The author describes different degenerate cases but states that these cases are highly unlikely, so considering the future usage of RANSAC consideration of such cases was ignored.
+The code was then transformed by MATLAB Coder and was evaluated firstly on noise-free synthetic data and then on synthetic data with zero-mean Gaussian noise.
+
+    For noise-free case the following metrics were evaluated: r\begin{itemize}
+        \item Relative accuracy of focal length estimation $\Delta_f=\frac{\left\lvert f - \hat{f}\right\rvert}{f}$
+        \item Relative accuracy of camera center translation estimation $\Delta_C = \frac{\left\lVert C - \hat{C}\right\rVert}{\left\lVert C\right\rVert}$
+        \item Accuracy of orientation estimation            as [normalized] Frobenius norm of the difference $\Delta_R = \frac{\left\lVert R - \hat{R}\right\rVert_F}{3}$
+        \item Execution time $t$
     \end{itemize}
-\end{frame}
+The plots can be seen in \ref{fig:double} and \ref{fig:single} for double- and single-precision respectively.
+
+\begin{figure}[h!]
+\centering
+\begin{subfigure}{0.23\textwidth}
+%% begin.rcode df.double, include=T, echo=F, fig.height=2.4, fig.width=3
+%   histogram(~dF, data=data.double_clear, xlab='Relative error', scales=list(x=list(log=T)))
+%% end.rcode
+\caption{$\Delta_f$}
+\end{subfigure}
+\begin{subfigure}{0.23\textwidth}
+%% begin.rcode dr.double, include=T, echo=F, fig.height=2.4, fig.width=3
+%   histogram(~dR, data=data.double_clear, xlab='Error', scales=list(x=list(log=T)))
+%% end.rcode
+\caption{$\Delta_R$}
+\end{subfigure}
+\begin{subfigure}{0.23\textwidth}
+%% begin.rcode dc.double, include=T, echo=F, fig.height=2.4, fig.width=3
+%   histogram(~dC, data=data.double_clear, xlab='Relative error', scales=list(x=list(log=T)))
+%% end.rcode
+\caption{$\Delta_C$}
+\end{subfigure}
+\begin{subfigure}{0.23\textwidth}
+%% begin.rcode t.double, include=T, echo=F, fig.height=2.4, fig.width=3
+%   histogram(~dt, data=data.double_clear, xlab='Execution time (s)', scales=list(x=list(log=T)))
+%% end.rcode
+\caption{$t$}
+\end{subfigure}
+\caption{Evaluation results (noize-free, double-precision)}
+\label{fig:single}
+\end{figure}
+
+\begin{figure}[h!]
+\centering
+\begin{subfigure}{0.23\textwidth}
+%% begin.rcode df.single, include=T, echo=F, fig.height=2.4, fig.width=3
+%   histogram(~dF, data=data.single_clear, xlab='Relative error', scales=list(x=list(log=T)))
+%% end.rcode
+\caption{$\Delta_f$}
+\end{subfigure}
+\begin{subfigure}{0.23\textwidth}
+%% begin.rcode dr.single, include=T, echo=F, fig.height=2.4, fig.width=3
+%   histogram(~dR, data=data.single_clear, xlab='Error', scales=list(x=list(log=T)))
+%% end.rcode
+\caption{$\Delta_R$}
+\end{subfigure}
+\begin{subfigure}{0.23\textwidth}
+%% begin.rcode dc.single, include=T, echo=F, fig.height=2.4, fig.width=3
+%   histogram(~dC, data=data.single_clear, xlab='Relative error', scales=list(x=list(log=T)))
+%% end.rcode
+\caption{$\Delta_C$}
+\end{subfigure}
+\begin{subfigure}{0.23\textwidth}
+%% begin.rcode t.single, include=T, echo=F, fig.height=2.4, fig.width=3
+%   histogram(~dt, data=data.single_clear, xlab='Execution time (s)', scales=list(x=list(log=T)))
+%% end.rcode
+\caption{$t$}
+\end{subfigure}
+\caption{Evaluation results (noize-free, single-precision)}
+\label{fig:double}
+\end{figure}
+
+For the time the mean was $\rinline{round(mean(data.double_clear$dt*1000),digits=2)}ms$ and $\rinline{round(mean(data.single_clear$dt*1000),digits=2)}ms$ and the median: $\rinline{round(median(data.double_clear$dt*1000),digits=2)}ms$ and \item  median $\rinline{round(median(data.single_clear$dt*1000),digits=2)}ms$ for double- and single-precision respectively. Timings in different precision modes are pretty similar due to
+            \begin{itemize}
+                \item Lots of scalar code in elimination template preparation stage
+                \item Several conversions between double- and single-precision are still present in the generated C-code
+            \end{itemize}
+
+
+The algorithm was also tested on a synthetic data with added Gaussian zero-mean noise. The implementation was compared in double- and single-precision. As can be seen in \ref{fig:noisy}.
+%%begin.rcode echo=F
+%st00.single <- data.frame(data.single$stdev0.0)
+%names(st00.single) <- c('stdev')
+%st00.single$precision <- 'single'
+%st00.double <- data.frame(data.double$stdev0.0)
+%names(st00.double) <- c('stdev')
+%st00.double$precision <- 'double'
+%triple00 <- rbind(st00.single, st00.double)
+%triple00 <- triple00[!(triple00$stdev<0),]
+
+%st05.single <- data.frame(data.single$stdev0.5)
+%names(st05.single) <- c('stdev')
+%st05.single$precision <- 'single'
+%st05.double <- data.frame(data.double$stdev0.5)
+%names(st05.double) <- c('stdev')
+%st05.double$precision <- 'double'
+%triple05 <- rbind(st05.single, st05.double)
+%triple05 <- triple05[!(triple05$stdev<0),]
+
+%st10.single <- data.frame(data.single$stdev1.0)
+%names(st10.single) <- c('stdev')
+%st10.single$precision <- 'single'
+%st10.double <- data.frame(data.double$stdev1.0)
+%names(st10.double) <- c('stdev')
+%st10.double$precision <- 'double'
+%triple10 <- rbind(st10.single, st10.double)
+%triple10 <- triple10[!(triple10$stdev<0),]
+
+%st15.single <- data.frame(data.single$stdev1.5)
+%names(st15.single) <- c('stdev')
+%st15.single$precision <- 'single'
+%st15.double <- data.frame(data.double$stdev1.5)
+%names(st15.double) <- c('stdev')
+%st15.double$precision <- 'double'
+%triple15 <- rbind(st15.single, st15.double)
+%triple15 <- triple15[!(triple15$stdev<0),]
+%%end.rcode
+\begin{figure}[h!]
+\begin{subfigure}[b]{0.475\textwidth}
+%%begin.rcode message=F, warning=F, echo=F, fig.height=1.2, fig.width=3
+%ggplot(triple00, aes(stdev, fill = precision)) + geom_density(alpha = 0.2) + scale_x_log10() + xlab("stdev = 0.0")
+%%end.rcode
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.475\textwidth}
+%%begin.rcode message=F, warning=F, echo=F, fig.height=1.2, fig.width=3
+%ggplot(triple05, aes(stdev, fill = precision)) + geom_density(alpha = 0.2) + scale_x_log10() + xlab("stdev = 0.5")
+%%end.rcode
+\end{subfigure}
+\vskip\baselineskip
+\begin{subfigure}[b]{0.475\textwidth}
+%%begin.rcode message=F, warning=F, echo=F, fig.height=1.2, fig.width=3
+%ggplot(triple10, aes(stdev, fill = precision)) + geom_density(alpha = 0.2) + scale_x_log10() + xlab("stdev = 1.0")
+%%end.rcode
+\end{subfigure}
+\quad
+\begin{subfigure}[b]{0.475\textwidth}
+%%begin.rcode message=F, warning=F, echo=F, fig.height=1.2, fig.width=3
+%ggplot(triple15, aes(stdev, fill = precision)) + geom_density(alpha = 0.2) + scale_x_log10() + xlab("stdev = 1.5") 
+%%end.rcode
+\end{subfigure}
+\caption{P3.5P on data with zero-mean Gaussian noise and different standard deviations}
+\label{fig:noisy}
+\end{figure}
+
+%\subsection{Summary}
+Overall, the implemented algorithm exhibits reasonable accuracy but could have shown better speed.
+
+\section{P4Pf}
+
+The next algorithm is by \cite{kukelova}. The authors suggest an efficient way of solving a system of 3 quadric equations in 3 unknowns (3Q3 problem) and reduce P4Pf problem to 3Q3 problem.
+
+\subsection{3Q3}
+
+The general case of the algorithm was implemented in MATLAB. The authors of the article provide different solutions for occurring degeneracies but they were yet ignored in the current implementation and are not reflected in the following evaluations.
+
+%The performance of the 3Q3 algorithm implementation was evaluated on generated data in double precision. In figure \ref{fig:3q3} is an evaluation of relative accuracy $\Delta_X = \frac{\min_{X\in S}\||X - X^*\|}{\|X^*\|}$, where $S\subset \mathbb{R}$ is a set of solutions returned by 3Q3 solver and $X^*$ is a solution for which the system of equations was generated:
+
+\subsection{P4Pf}
+
+%begin.rcode echo=F
+%focal.p3.5p  <- data.frame(data.double$stdev0.0)
+%names(focal.p3.5p) <- c('df')
+%focal.p3.5p$algorithm <- 'P3.5P'
+
+%focal.p4p  <- data.frame(data.P4Pf$df)
+%names(focal.p4p) <- c('df')
+%focal.p4p$algorithm <- 'P4P.3Q3'
+
+
+%focal_double <- rbind(focal.p3.5p , focal.p4p )
+%focal_double <- focal_double[!(focal_double$df<0),]
+%%end.rcode
+   3Q3 algorithm is directly used in P4Pf algorithm. Current implementation of P4Pf thus far obtains only focal length estimation for non-degenerate cases which was evaluated on generated data by relative accuracy $\Delta_f = \frac{|f - f^*|}{|f^*|}$, as can be seen in \ref{fig:p4p}
+   \begin{figure}[h!]
+	\begin{subfigure}[b]{0.4\textwidth}
+        %% begin.rcode message=F, warning=F, echo=F, fig.height=2.4, fig.width=3
+        % ggplot(data.P4Pf, aes(x=df)) + geom_histogram() + scale_x_log10() + xlab("relative error (P4P+3Q3)")
+        %% end.rcode
+	%\caption{$\Delta_f$ for P4Pf+3Q3}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.475\textwidth}
+	%%begin.rcode message=F, warning=F, echo=F, fig.height=2.4, fig.width=4
+	%ggplot(focal_double, aes(df, fill = algorithm)) + geom_density(alpha = 0.2) + scale_x_log10() + xlab("relative error (comparison)") 
+	%%end.rcode
+	%\capion{$\Delta_f$}	
+	\end{subfigure}
+   \caption{Evaluaiton results of $\Delta_f$ (noise-free, double-precision)}	
+   \label{fig:p4p}
+   \end{figure} 
+
+%\subsection{Summary}
+
+To sum up this algorithm provides similar accuracy and there is hope that it could work faster than P3.5P if the number of solutions would not be big.
+
+\section{Conclusion}
+
+During this month P3.5P algorithm was implemented on MATLAB and using MATLAB Coder was evaluated on accuracy and speed in single- and double-precision. P4P was started to be implemented in hopes of getting a better speed. Two algorithms were compared on focal distance evaluation in double-precision. The plan is two finish the implementation of P4P, compare the two algorithms and choose the one that fits best.
+
+\printbibliography
 
 \end{document}
