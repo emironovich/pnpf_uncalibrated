@@ -1,4 +1,4 @@
-function [n, xs, ys, zs, A, P, P_prime, M, pol] = solve_3Q3(c, e) %c -- 3x10 coefficients matrix
+function [n, xs, ys, zs] = solve_3Q3(c, e) %c -- 3x10 coefficients matrix
 %SOLVE_3Q3 Summary of this function goes here
 %   Detailed explanation goes here
     A = find_A(c);
@@ -15,7 +15,7 @@ function [n, xs, ys, zs, A, P, P_prime, M, pol] = solve_3Q3(c, e) %c -- 3x10 coe
     for i = 1 : length(xs_complex)
         if abs(imag(xs_complex(i))) < e
             n = n + 1;
-            xs(n) = xs_complex(i);
+            xs(n) = real(xs_complex(i));
         end
     end
     xs = xs(1:n);

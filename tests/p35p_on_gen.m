@@ -1,12 +1,12 @@
-N = 1000000;
+% N = 10000;
 
-stats = zeros(5, N);
+stats_p35p = zeros(5, N);
 valid = false(N, 1);
 
-p35p = @(X,x,y,e)p35p_solver(X,x,y,e);
-% uncomment for MEX-based solver
-%p35p = @(X,x,y,e)p35p_solver_mex(X,x,y,e);
-eps = 1e-6;
+% p35p = @(X,x,y,e)p35p_solver(X,x,y,e);
+% % uncomment for MEX-based solver
+% p35p = @(X,x,y,e)p35p_solver_mex(X,x,y,e);
+% eps = 1e-6;
 % uncomment for single-precision evaluation
 %eps = 1e-1;
 
@@ -43,7 +43,7 @@ parfor ind = 1:N
     
     
     if solution_num ~= 0
-        stats(:, ind) = [min_diff / f_gen; diff_R; diff_C; dt; solution_num];
+        stats_p35p(:, ind) = [min_diff / f_gen; diff_R; diff_C; dt; solution_num];
         valid(ind) = true;
     end
 end
@@ -51,9 +51,9 @@ toc
 
 zero_solutions = numel(find(~valid));
 
-stats = stats(:, valid);
+stats_p35p = stats_p35p(:, valid);
 filename = 'stats_double_mex.csv';
 f=fopen(filename, 'wt');
 fprintf(f, 'dF,dR,dC,dt,N\n');
 fclose(f);
-dlmwrite(filename, stats', '-append');
+dlmwrite(filename, stats_p35p', '-append');

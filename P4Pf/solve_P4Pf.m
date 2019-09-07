@@ -1,4 +1,4 @@
-function [n, fs, Rs, Ts, A, N, D, eqs] = solve_P4Pf(X, u, v, e)
+function [n, fs, Rs, Ts] = solve_P4Pf(X, u, v, e)
 %SOLVE_3Q3 Summary of this function goes here
 %       X = [p1, p2, p3, p4], pi = [4, 1]; X(:, i) <-> (u(i), v(i))
 %       if f is a correct foal length, then [R, T] = [R, T] / sign(d)*abs(d)^(1/3);

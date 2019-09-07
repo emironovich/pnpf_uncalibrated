@@ -1,37 +1,50 @@
-N = 10000;
-e = 1e-4;
-stats = zeros(N, 1);
+% N = 10000;
+% e = 1e-4;
+stats_p4p = zeros(5, N);
 
-for ind = 1 : N
-    [X, u, v, R, C, f, P] = generate_data();
-    T = -R*C;
-    [num, fs, Rs, Ts] = solve_P4Pf(X, u, v, e);
+%p4p = @(X, u, v, e)solve_P4Pf(X, u, v, e);
+% uncomment for MEX-based solver
+%p4p = @(X, u, v, e)solve_P4Pf_mex(X, u, v, e);
+
+tic
+parfor ind = 1 : N
+    [X, u, v, R_gen, C_gen, f_gen, P] = generate_data();
+    T_gen = -R_gen*C_gen;
+    start = tic;
+    [num, fs, Rs, Ts] = p4p(X, u, v, e);
+    dt = toc(start);
+    
     min_diff = inf;
-    min_T = zeros(3, 1);
-    min_R = zeros(3);
-    min_f = 0;
+    T = zeros(3, 1);
+    R = zeros(3);
+    f = 0;
     for i = 1 : num
-        if abs(fs(i) - f) < min_diff
-            min_diff = abs(fs(i) - f);
-            min_f = fs(i);
-            min_T = Ts(:, i);
-            min_R = Rs(:, 3*i - 2: 3*i);
+        if abs(fs(i) - f_gen) < min_diff
+            min_diff = abs(fs(i) - f_gen);
+            f = fs(i);
+            T = Ts(:, i);
+            R = Rs(:, 3*i - 2: 3*i);
         end
     end
-    stats(ind) = min_diff/f;
-    d = det(min_R);
+    d = det(R);
     mult = sign(d)*abs(d)^(1/3);
-    min_R = min_R / mult;
-    min_T = min_T / mult;
+    R = R / mult;
+    T = T / mult;
+    
+    diff_R = norm(R-R_gen)/3;
+    diff_T = norm(T - T_gen)/norm(T_gen);
+    
+    stats_p4p(:, ind) = [min_diff / f_gen; diff_R; diff_T; dt; num];
 %     R
 %     min_R
 %     T
 %     min_T
 end
+toc
 
-filename = 'P4Pf_focus_stats.csv';
-f=fopen(filename, 'wt');
-fprintf(f, 'df\n');
-fclose(f);
-
-dlmwrite(filename, stats, '-append');
+% filename = 'P4Pf_focus_stats.csv';
+% f=fopen(filename, 'wt');
+% fprintf(f, 'df\n');
+% fclose(f);
+% 
+% dlmwrite(filename, stats, '-append');
