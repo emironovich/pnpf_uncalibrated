@@ -3,10 +3,10 @@
 N = 10000;
 e = 1e-4;
 
-% p4p = @(X, u, v, e)solve_P4Pf_double_mex(X, u, v, e);
-% p35p = @(X,x,y,e)p35p_solver_double_mex(X,x,y,e);
-p4p = @(X, u, v, e)solve_P4Pf_mex(X, u, v, e);
-p35p = @(X,x,y,e)p35p_solver_mex(X,x,y,e);
+p4p = @(X, u, v, e)solve_P4Pf_double_mex(X, u, v, e);
+p35p = @(X,x,y,e)p35p_solver_double_mex(X,x,y,e);
+% p4p = @(X, u, v, e)solve_P4Pf_mex(X, u, v, e);
+% p35p = @(X,x,y,e)p35p_solver_mex(X,x,y,e);
 
 p35p_on_gen
 diff_to_cvs
@@ -21,7 +21,7 @@ arr = stats_p4p';
 write_to_cvs(filename, arr, 'dF,dR,dC,dt,N');
 
 
-p4p = @(X, u, v, e)solver_P4Pf_single_mex(X, u, v, e);
+p4p = @(X, u, v, e)solve_P4Pf_single_mex(X, u, v, e);
 p35p = @(X,x,y,e)p35p_solver_single_mex(X,x,y,e);
 
 p35p_on_gen
