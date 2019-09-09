@@ -53,6 +53,14 @@
 %names(data.double) <- c('stdev0.0', 'stdev0.5', 'stdev1.0', 'stdev1.5', 'stdev2.0', 'stdev2.5', 'stdev3.0', 'stdev3.5', 'stdev4.0', 'stdev4.5', 'stdev5.0');
 %data.3Q3 <- read.csv('3Q3_stats.csv')
 %data.P4Pf <- read.csv('P4Pf_focus_stats.csv')
+%data.P4P.single <-read.csv('./data_comparison/stats_p4p_single.csv')
+%data.P4P.double <-read.csv('./data_comparison/stats_p4p_double.csv')
+%data.P35P.single <-read.csv('./data_comparison/stats_p35p_single.csv')
+%data.P35P.double <-read.csv('./data_comparison/stats_p35p_double.csv')
+%data.P4P.noisy <- read.csv('./data_comparison/stats_p4p_noisy.csv', header = FALSE);
+%names(data.single) <- c('stdev0.0', 'stdev0.5', 'stdev1.0', 'stdev1.5', 'stdev2.0', 'stdev2.5', 'stdev3.0', 'stdev3.5', 'stdev4.0', 'stdev4.5', 'stdev5.0');
+%data.P35P.noisy <- read.csv('./data_comparison/stats_p35p_noisy.csv', header = FALSE);
+%names(data.single) <- c('stdev0.0', 'stdev0.5', 'stdev1.0', 'stdev1.5', 'stdev2.0', 'stdev2.5', 'stdev3.0', 'stdev3.5', 'stdev4.0', 'stdev4.5', 'stdev5.0');
 % N <- 1e6
 %% end.rcode
 
@@ -287,6 +295,74 @@ The general case of the algorithm was implemented in MATLAB. The authors of the 
    \caption{Evaluaiton results of $\Delta_f$ (noise-free, double-precision)}	
    \label{fig:p4p}
    \end{figure} 
+
+\section{New data!!!!}
+
+%%begin.rcode echo=F
+%P35P.dF.single <- data.frame(data.P35P.single$dF)
+%names(P35P.dF.single) <- c('dF')
+%P35P.dF.single$algorithm <- 'P3.5Pf'
+%P4P.dF.single <- data.frame(data.P4P.single$dF)
+%names(P4P.dF.single) <- c('dF')
+%P4P.dF.single$algorithm <- 'P4Pf'
+%dF.comp <- rbind(P35P.dF.single, P4P.dF.single)
+%dF.comp <- dF.comp[!(dF.comp$dF<0),]
+
+%P35P.dR.single <- data.frame(data.P35P.single$dR)
+%names(P35P.dR.single) <- c('dR')
+%P35P.dR.single$algorithm <- 'P3.5Pf'
+%P4P.dR.single <- data.frame(data.P4P.single$dR)
+%names(P4P.dR.single) <- c('dR')
+%P4P.dR.single$algorithm <- 'P4Pf'
+%dR.comp <- rbind(P35P.dR.single, P4P.dR.single)
+%dR.comp <- dR.comp[!(dR.comp$dR<0),]
+
+%P35P.dC.single <- data.frame(data.P35P.single$dC)
+%names(P35P.dC.single) <- c('dC')
+%P35P.dC.single$algorithm <- 'P3.5Pf'
+%P4P.dC.single <- data.frame(data.P4P.single$dC)
+%names(P4P.dC.single) <- c('dC')
+%P4P.dC.single$algorithm <- 'P4Pf'
+%dC.comp <- rbind(P35P.dC.single, P4P.dC.single)
+%dC.comp <- dC.comp[!(dC.comp$dC<0),]
+
+%P35P.dt.single <- data.frame(data.P35P.single$dt)
+%names(P35P.dt.single) <- c('dt')
+%P35P.dt.single$algorithm <- 'P3.5Pf'
+%P4P.dt.single <- data.frame(data.P4P.single$dt)
+%names(P4P.dt.single) <- c('dt')
+%P4P.dt.single$algorithm <- 'P4Pf'
+%dt.comp <- rbind(P35P.dt.single, P4P.dt.single)
+%dt.comp <- dt.comp[!(dt.comp$dt<0),]
+
+%%end.rcode
+\begin{figure}[h!]
+\begin{subfigure}[b]{0.475\textwidth}
+%%begin.rcode message=F, warning=F, echo=F, fig.height=1.2, fig.width=3
+%ggplot(dF.comp, aes(dF, fill = algorithm)) + geom_density(alpha = 0.2) + scale_x_log10() + xlab("focus")
+%%end.rcode
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.475\textwidth}
+%%begin.rcode message=F, warning=F, echo=F, fig.height=1.2, fig.width=3
+%ggplot(dR.comp, aes(dR, fill = algorithm)) + geom_density(alpha = 0.2) + scale_x_log10() + xlab("rotation")
+%%end.rcode
+\end{subfigure}
+\vskip\baselineskip
+\begin{subfigure}[b]{0.475\textwidth}
+%%begin.rcode message=F, warning=F, echo=F, fig.height=1.2, fig.width=3
+%ggplot(dC.comp, aes(dC, fill = algorithm)) + geom_density(alpha = 0.2) + scale_x_log10() + xlab("translation")
+%%end.rcode
+\end{subfigure}
+\quad
+\begin{subfigure}[b]{0.475\textwidth}
+%%begin.rcode message=F, warning=F, echo=F, fig.height=1.2, fig.width=3
+%ggplot(dt.comp, aes(dt, fill = algorithm)) + geom_density(alpha = 0.2) + scale_x_log10() + xlab("time") 
+%%end.rcode
+\end{subfigure}
+\caption{P3.5P and on noise-free data in single-precision}
+\label{fig:comp_single}
+\end{figure}
 
 %\subsection{Summary}
 
