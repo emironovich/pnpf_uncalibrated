@@ -3,37 +3,23 @@
 N = 10000;
 e = 1e-4;
 
-p4p = @(X, u, v, e)solve_P4Pf_double_mex(X, u, v, e);
-p35p = @(X,x,y,e)p35p_solver_double_mex(X,x,y,e);
-% p4p = @(X, u, v, e)solve_P4Pf_mex(X, u, v, e);
-% p35p = @(X,x,y,e)p35p_solver_mex(X,x,y,e);
 
-p35p_on_gen
-diff_to_cvs
+p35p_double = @(X, x, y, e)p35p_solver_double_mex(X, x, y, e);
+p4p_double = @(X, u, v, e)solve_P4Pf_double_mex(X, u, v, e);
+% p35p_double = @(X, x, y, e)p35p_solver(X, x, y, e);
+% p4p_double = @(X, u, v, e)solve_P4Pf(X, u, v, e);
 
-
-filename = 'stats_p35p_double.csv';
-arr = stats_p35p';
-write_to_cvs(filename, arr, 'dF,dR,dC,dt,N');
-
-filename = 'stats_p4p_double.csv';
-arr = stats_p4p';
-write_to_cvs(filename, arr, 'dF,dR,dC,dt,N');
+solver_on_gen(N, e, p35p_double, 'stats_p35p_double.csv');
+solver_on_gen(N, e, p4p_double, 'stats_p4p_double.csv');
 
 
-p4p = @(X, u, v, e)solve_P4Pf_single_mex(X, u, v, e);
-p35p = @(X,x,y,e)p35p_solver_single_mex(X,x,y,e);
+p35p_single = @(X, x, y, e)p35p_solver(X, x, y, e);
+p4p_single = @(X, u, v, e)solve_P4Pf(X, u, v, e);
+% p35p_single = @(X, x, y, e)p35p_solver_single_mex(X, x, y, e);
+% p4p_single = @(X, u, v, e)solve_P4Pf_single_mex(X, u, v, e);
 
-p35p_on_gen
-diff_to_cvs
+solver_on_gen(N, e, p35p_single, 'stats_p35p_single.csv');
+solver_on_gen(N, e, p4p_single, 'stats_p4p_single.csv');
 
-filename = 'stats_p35p_single.csv';
-arr = stats_p35p';
-write_to_cvs(filename, arr, 'dF,dR,dC,dt,N');
-
-filename = 'stats_p4p_single.csv';
-arr = stats_p4p';
-write_to_cvs(filename, arr, 'dF,dR,dC,dt,N');
-
-write_noisy_stats(N, e, p4p, 'stats_p4p_noisy.csv');
-write_noisy_stats(N, e, p35p, 'stats_p35p_noisy.csv');
+solver_on_gen_with_noise(N, e, p35p_single, 'stats_p35p_noisy.csv');
+solver_on_gen_with_noise(N, e, p4p_single, 'stats_p4p_noisy.csv');
