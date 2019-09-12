@@ -37,7 +37,7 @@ function solver_on_gen(N, eps, solver_handle, csv_filename)
                 min_diff = diff;    
                  diff_R = diffR;
                  diff_C = diffC;
-            elseif diff == min_diff && diffR < diffR
+            elseif diff == min_diff && diffR < diff_R
                    diff_R = diffR;
                    diff_C = diffC;
             end
