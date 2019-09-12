@@ -11,8 +11,11 @@ function [n, fs, Rs, Ts] = solve_P4Pf(X, u, v, e)
     eqs = find_eqs([N; D]); 
     [n, xs, ys, zs] = solve_3Q3(eqs(1:3, :), e); %we may choes another 3 out of 4 eq-s
     fs = zeros(1, n);
-    Rs = zeros(3, 3*n);
+%    coder.varsize('f_sol', [1 10], [0 1]); %????????????
+    Rs = zeros(3, 3, n);
+%    coder.varsize('R_sol', [3 3 10], [0 0 1]);%????????????
     Ts = zeros(3, n);
+%    coder.varsize('T_sol', [3 10], [0 1]); %?????????
     for i = 1 : n
         P = [N; D]*[xs(i); ys(i); zs(i); 1];
         P = [P(1:4)'; P(5:8)'; P(9:12)'];
@@ -20,7 +23,7 @@ function [n, fs, Rs, Ts] = solve_P4Pf(X, u, v, e)
         fs(i) = 1/w;
         RT = P;
         RT(3, :) = RT(3, :) / w;
-        Rs(:, 3*i - 2: 3*i) = RT(:, 1:3);
+        Rs(:, :, i) = RT(:, 1:3);
         Ts(:, i) = RT(:, 4);
     end
 end
