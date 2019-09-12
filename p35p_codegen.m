@@ -7,7 +7,7 @@ valid = false(N, 1);
 
 tic
 for ind = 1 : N
-    [X, x, y, R_gen, C_gen, f_gen, P] = generate_data();
+    [X, x, y, f_gen, R_gen, C_gen, P] = generate_data();
     e = 1e-6;
     start = tic;
     [solution_num, f_sol, R_sol, T_sol] = p35p_solver(X, x, y, e);

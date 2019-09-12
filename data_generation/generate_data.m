@@ -2,7 +2,7 @@
 %center of the camera and then projects points onto the prjection plain
 %then adds gaussian noise with zero mean and standard deviation d
 %d = 0 if the argument is not provided
-function [X, x, y, R, C, f, P] = generate_data(d)
+function [X, x, y, f, R, C, P] = generate_data(d)
     if nargin == 0
         d = 0;
     end

@@ -8,7 +8,7 @@ stats_p4p = zeros(5, N);
 
 tic
 parfor ind = 1 : N
-    [X, u, v, R_gen, C_gen, f_gen, P] = generate_data();
+    [X, u, v, f_gen, R_gen, C_gen, P] = generate_data();
     T_gen = -R_gen*C_gen;
     start = tic;
     [num, fs, Rs, Ts] = p4p(X, u, v, e);

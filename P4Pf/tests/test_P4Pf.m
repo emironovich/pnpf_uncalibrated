@@ -1,6 +1,6 @@
 %Testing solve_P4Pf()
 
-[X, u, v, R, C, f, P] = generate_data();
+[X, u, v, f, R, C, P] = generate_data();
 w = 1 / f;
 T = -R*C;
 e = 1e-8;

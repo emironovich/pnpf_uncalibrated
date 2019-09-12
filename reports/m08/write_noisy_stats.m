@@ -6,7 +6,7 @@ function write_noisy_stats(N, eps, solver, filename)
         valid = false(N, 1);
         tic
         for ind = 1:N
-            [X, x, y, ~, ~, f_gen] = generate_data(d);
+            [X, x, y, f_gen] = generate_data(d);
             start = tic;
             [solution_num, f_sol] = solver(X, x, y, eps);
             dt = toc(start);
