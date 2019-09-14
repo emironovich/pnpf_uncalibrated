@@ -1,5 +1,5 @@
 function [n, fs, Rs, Ts] = solve_P4Pf(X, u, v, e)
-%SOLVE_3Q3 Summary of this function goes here
+%SOLVE_P4Pf Summary of this function goes here
 %       X = [p1, p2, p3, p4], pi = [4, 1]; X(:, i) <-> (u(i), v(i))
 %       if f is a correct foal length, then [R, T] = [R, T] / sign(d)*abs(d)^(1/3);
 %       where d = det(R)
@@ -17,14 +17,21 @@ function [n, fs, Rs, Ts] = solve_P4Pf(X, u, v, e)
     Ts = zeros(3, n);
 %    coder.varsize('T_sol', [3 10], [0 1]); %?????????
     for i = 1 : n
-        P = [N; D]*[xs(i); ys(i); zs(i); 1];
-        P = [P(1:4)'; P(5:8)'; P(9:12)'];
-        w = sqrt(sum(P(3, 1:3).^2)/sum(P(1, 1:3).^2));
+        P1 = (N(1:3, :)*[xs(i); ys(i); zs(i); 1])';
+        P3 = (D(1:3, :)*[xs(i); ys(i); zs(i); 1])';
+        
+        w = sqrt(sum(P3(1:3).^2)/sum(P1(1:3).^2));
         fs(i) = 1/w;
-        RT = P;
-        RT(3, :) = RT(3, :) / w;
-        Rs(:, :, i) = RT(:, 1:3);
-        Ts(:, i) = RT(:, 4);
+        
+        alpha = norm(P1);
+        R1 = P1/alpha;
+        R3 = P3/(w*alpha);
+        R2 = -cross(R1, R3);
+        %R2 = -R2/norm(R2);
+        R = [R1; R2; R3];
+        Rs(:, :, i) = R;
+
+        Ts(:, i) = find_T(X(1:3, :), u, v, R, w);
     end
 end
 
