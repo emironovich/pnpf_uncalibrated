@@ -1,4 +1,4 @@
-function [n, fs, Rs, Ts] = solve_P4Pf(X, u, v, e)
+function [solution_num, fs, Rs, Ts] = solve_P4Pf(X, u, v, e)
 %SOLVE_P4Pf Summary of this function goes here
 %       X = [p1, p2, p3, p4], pi = [4, 1]; X(:, i) <-> (u(i), v(i))
 %       if f is a correct foal length, then [R, T] = [R, T] / sign(d)*abs(d)^(1/3);
@@ -10,19 +10,19 @@ function [n, fs, Rs, Ts] = solve_P4Pf(X, u, v, e)
     D = find_D(X, u, v, N, e);
     eqs = find_eqs([N; D]); 
     [n, xs, ys, zs] = solve_3Q3(eqs(1:3, :), e); %we may choes another 3 out of 4 eq-s
-    fs = zeros(1, n);
-%    coder.varsize('f_sol', [1 10], [0 1]); %????????????
-    Rs = zeros(3, 3, n);
-%    coder.varsize('R_sol', [3 3 10], [0 0 1]);%????????????
-    Ts = zeros(3, n);
-%    coder.varsize('T_sol', [3 10], [0 1]); %?????????
+    fs = zeros(1, 0);
+    coder.varsize('fs', [1 10], [0 1]);
+    Rs = zeros(3, 3, 0);
+    coder.varsize('Rs', [3 3 10], [0 0 1]);
+    Ts = zeros(3, 0);
+    coder.varsize('Ts', [3 10], [0 1]);
+    solution_num = 0;
     for i = 1 : n
         P1 = (N(1:3, :)*[xs(i); ys(i); zs(i); 1])';
         P3 = (D(1:3, :)*[xs(i); ys(i); zs(i); 1])';
         P21 = N(5, :)*[xs(i); ys(i); zs(i); 1];
         
         w = sqrt(sum(P3(1:3).^2)/sum(P1(1:3).^2));
-        fs(i) = 1/w;
         
         alpha = norm(P1);
         R1 = P1/alpha;
@@ -37,9 +37,22 @@ function [n, fs, Rs, Ts] = solve_P4Pf(X, u, v, e)
         if det(R) < 0
             R = -R;         
         end
-        Rs(:, :, i) = R;
+        T = find_T(X(1:3, :), u, v, R, w);
         
-        Ts(:, i) = find_T(X(1:3, :), u, v, R, w);
+        P = diag([1, 1, w])*[R, T];
+        U_eval = P*X;
+        U_eval = U_eval ./ U_eval(3, :);
+        %reprojection error check
+        if norm(U_eval(1:2, :) - [u;v]) < e
+            solution_num = solution_num + 1;
+            fs = [fs, 1/w];
+            if solution_num == 1
+                Rs = R;
+            else
+                Rs = cat(3, Rs, R);
+            end
+            Ts = [Ts, T];
+        end
     end
 end
 
