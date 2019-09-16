@@ -1,7 +1,8 @@
 %function that prints df,dR,dC,dt(time),N(sol.num.)on noise-free syn. data
 %of solver with 'solver_handle' into csv_filename
+%solver_type is either 'p3.5p' or 'p4p'
 
-function solver_on_gen(N, eps, solver_handle, csv_filename)
+function stats = solver_on_gen(N, eps, solver_handle, solver_type, csv_filename)
     stats = zeros(5, N);
     valid = false(N, 1);
 
@@ -26,7 +27,13 @@ function solver_on_gen(N, eps, solver_handle, csv_filename)
             f = f_sol(i);
             T = T_sol(:, i);
             R = squeeze(R_sol(:,:,i));
-            C = (-diag([f, f, 1])*R)\T;
+            if strcmp(solver_type, 'p3.5p')
+                C = (-diag([f, f, 1])*R)\T;
+            elseif strcmp(solver_type, 'p4p')
+                C = -R\T;
+            else
+                error('Wrong solver_type. Must be "p3.5p" or "p4p"');
+            end
 
             diff = abs(f - f_gen);
 

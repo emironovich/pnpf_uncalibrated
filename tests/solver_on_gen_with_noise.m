@@ -1,7 +1,7 @@
 %function that prints focus error on syn. data with noise
 %of solver with 'solver_handle' into csv_filename 
 
-function solver_on_gen_with_noise(N, eps, solver_handle, csv_filename)
+function stats = solver_on_gen_with_noise(N, eps, solver_handle, csv_filename)
     stats = zeros(N, 11);
 
     for d = 0:0.5:5
