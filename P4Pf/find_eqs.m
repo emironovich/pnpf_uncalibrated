@@ -1,5 +1,5 @@
 function eqs = find_eqs(ND) %ND = [N; D]
-    eqs = zeros(4, 10);
+    eqs = zeros(4, 10, 'like', ND);
     eqs(1, :) = mult_pp(1, 1, 2, 1, ND) + mult_pp(1, 2, 2, 2, ND) + mult_pp(1, 3, 2, 3, ND);
     eqs(2, :) = mult_pp(3, 1, 1, 1, ND) + mult_pp(3, 2, 1, 2, ND) + mult_pp(3, 3, 1, 3, ND);
     eqs(3, :) = mult_pp(3, 1, 2, 1, ND) + mult_pp(3, 2, 2, 2, ND) + mult_pp(3, 3, 2, 3, ND);

@@ -3,14 +3,14 @@ function [n, xs, ys, zs] = solve_3Q3(c, e) %c -- 3x10 coefficients matrix
 %   Detailed explanation goes here
     A = find_A(c);
     P = find_P(c);
-    P_prime = zeros(3, 3, 3);
+    P_prime = zeros(3, 3, 3, 'like', c);
     for i = 1 : 3
         P_prime(:, :, i) = A\P(:, :, i);
     end
     M = find_M(P_prime);
     pol = find_det_M(M);
     xs_complex = roots(pol');
-    xs = zeros(1, length(xs_complex));
+    xs = zeros(1, length(xs_complex), 'like', c);
     n = 0;
     for i = 1 : length(xs_complex)
         if abs(imag(xs_complex(i))) < e
@@ -19,8 +19,8 @@ function [n, xs, ys, zs] = solve_3Q3(c, e) %c -- 3x10 coefficients matrix
         end
     end
     xs = xs(1:n);
-    ys = zeros(1, n);
-    zs = zeros(1, n);
+    ys = zeros(1, n, 'like', c);
+    zs = zeros(1, n, 'like', c);
     for i = 1 : n
         [ys(i), zs(i)] = find_yz(M, xs(i));
     end
@@ -33,7 +33,7 @@ function A = find_A(c)
 end
 
 function P = find_P(c)
-    P = zeros(3, 3, 3); %[x^2, x, 1]
+    P = zeros(3, 3, 3, 'like', c); %[x^2, x, 1]
     for i = 1 : 3
         P(i, 1, :) = [0, -c(i, 4), -c(i, 8)];        %y
         P(i, 2, :) = [0, -c(i, 5), -c(i, 9)];        %z

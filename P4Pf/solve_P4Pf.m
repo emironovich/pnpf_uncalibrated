@@ -3,18 +3,18 @@ function [solution_num, fs, Rs, Ts] = solve_P4Pf(X, u, v, e)
 %       X = [p1, p2, p3, p4], pi = [4, 1]; X(:, i) <-> (u(i), v(i))
 %       if f is a correct foal length, then [R, T] = [R, T] / sign(d)*abs(d)^(1/3);
 %       where d = det(R)
-    X = [X; ones(1, 4)];
+    X = [X; ones(1, 4, 'like', X)];
     A = find_A(X, u, v);
     [Q, ~] = qr(A');
     N = Q(:, 5:end); %nullspace
     D = find_D(X, u, v, N, e);
     eqs = find_eqs([N; D]); 
     [n, xs, ys, zs] = solve_3Q3(eqs(1:3, :), e); %we may choes another 3 out of 4 eq-s
-    fs = zeros(1, 0);
+    fs = zeros(1, 0, 'like', X);
     coder.varsize('fs', [1 10], [0 1]);
-    Rs = zeros(3, 3, 0);
+    Rs = zeros(3, 3, 0, 'like', X);
     coder.varsize('Rs', [3 3 10], [0 0 1]);
-    Ts = zeros(3, 0);
+    Ts = zeros(3, 0, 'like', X);
     coder.varsize('Ts', [3 10], [0 1]);
     solution_num = 0;
     for i = 1 : n
@@ -58,15 +58,15 @@ end
 
 function A = find_A(X, u, v)
     %[p11, p12, p13, p14, p21, p22, p23, p24]'
-    A = zeros(4, 8);
+    A = zeros(4, 8, 'like', X);
     for i = 1 : 4
         A(i,  :) = [-v(i)*X(:, i)', u(i)*X(:, i)'];
     end
 end
 
 function D = find_D(X, u, v, ns, e)
-    B = zeros(4);
-    C = zeros(4);
+    B = zeros(4, 'like', X);
+    C = zeros(4, 'like', X);
     for i = 1 : 4
         if abs(u(i)) < e
             fctr = v(i);
