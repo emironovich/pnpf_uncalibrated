@@ -45,22 +45,13 @@
 % library(reshape)
 % library(png)
 % library(ggplot2)
-% data.single_clear <- read.csv('stats_single_mex.csv')
-% data.double_clear <- read.csv('stats_double_mex.csv')
-%data.single <- read.csv('noisy_stats_single_mex.csv', header = FALSE);
-%names(data.single) <- c('stdev0.0', 'stdev0.5', 'stdev1.0', 'stdev1.5', 'stdev2.0', 'stdev2.5', 'stdev3.0', 'stdev3.5', 'stdev4.0', 'stdev4.5', 'stdev5.0');
-%data.double <- read.csv('noisy_stats_double_mex.csv', header = FALSE);
-%names(data.double) <- c('stdev0.0', 'stdev0.5', 'stdev1.0', 'stdev1.5', 'stdev2.0', 'stdev2.5', 'stdev3.0', 'stdev3.5', 'stdev4.0', 'stdev4.5', 'stdev5.0');
-%data.3Q3 <- read.csv('3Q3_stats.csv')
-%data.P4Pf <- read.csv('P4Pf_focus_stats.csv')
-%data.P4P.single <-read.csv('./data_comparison/stats_p4p_single.csv')
-%data.P4P.double <-read.csv('./data_comparison/stats_p4p_double.csv')
-%data.P35P.single <-read.csv('./data_comparison/stats_p35p_single.csv')
-%data.P35P.double <-read.csv('./data_comparison/stats_p35p_double.csv')
-%data.P4P.noisy <- read.csv('./data_comparison/stats_p4p_noisy.csv', header = FALSE);
-%names(data.single) <- c('stdev0.0', 'stdev0.5', 'stdev1.0', 'stdev1.5', 'stdev2.0', 'stdev2.5', 'stdev3.0', 'stdev3.5', 'stdev4.0', 'stdev4.5', 'stdev5.0');
-%data.P35P.noisy <- read.csv('./data_comparison/stats_p35p_noisy.csv', header = FALSE);
-%names(data.single) <- c('stdev0.0', 'stdev0.5', 'stdev1.0', 'stdev1.5', 'stdev2.0', 'stdev2.5', 'stdev3.0', 'stdev3.5', 'stdev4.0', 'stdev4.5', 'stdev5.0');
+
+%data.P4P.single <-read.csv('./stats/stats_p4p_single.csv')
+%data.P4P.double <-read.csv('./stats/stats_p4p_double.csv')
+%data.P35P.single <-read.csv('./stats/stats_p35p_single.csv')
+%data.P35P.double <-read.csv('./stats/stats_p35p_double.csv')
+%data.P4P.noisy <- read.csv('./stats/stats_p4p_noisy.csv');
+%data.P35P.noisy <- read.csv('./stats/stats_p35p_noisy.csv');
 % N <- 1e6
 %% end.rcode
 
@@ -78,11 +69,12 @@
 
 The goal of my work is to implement a good algorithm that solves the problem of localization of a camera and evaluation of its focal length. 
 Two algorithms were chosen to be considered: P3.5Pf by \cite{wu} and P4Pf with 3Q3 by \cite{kukelova}. 
-The first algorithm was implemented on MATLAB and transformed using MATLAB Coder. 
-It showed good accuracy results but its speed results were only satisfactory, so the decision have been made to consider the second algorithm that could be faster.
-The second algorithm was implemented up until the estimation of the focal length in MATLAB. 
-The implementation showed comparable results with the first implementation in double-precision.
-So the plan is to finish the 3Q3 implementation and compare the time and accuracy performance of the two algorithms in single-precision.
+Algorithms were implemented on MATLAB and transformed using MATLAB Coder. 
+The first algorithm showed good accuracy results but its speed results were only satisfactory, so the decision have been made to consider the second algorithm that could be faster.
+
+%The second algorithm was implemented up until the estimation of the focal length in MATLAB. 
+%The implementation showed comparable results with the first implementation in double-precision.
+%So the plan is to finish the 3Q3 implementation and compare the time and accuracy performance of the two algorithms in single-precision.
 
 
 \section{Problem definition}
@@ -106,7 +98,7 @@ The main intrest of the paper \cite{wu} is that the algorithm uses a minimal amo
 
 %\subsection{Implementation performance}
     The general case of the algorithm was implemented in MATLAB. 
-The author describes different degenerate cases but states that these cases are highly unlikely, so considering the future usage of RANSAC consideration of such cases was ignored.
+The author describes different degenerate cases but states that these cases are highly unlikely, so considering the future usage of RANSAC, consideration of such cases was ignored.
 The code was then transformed by MATLAB Coder and was evaluated firstly on noise-free synthetic data and then on synthetic data with zero-mean Gaussian noise.
 
     For noise-free case the following metrics were evaluated: r\begin{itemize}
@@ -117,67 +109,8 @@ The code was then transformed by MATLAB Coder and was evaluated firstly on noise
     \end{itemize}
 The plots can be seen in \ref{fig:double} and \ref{fig:single} for double- and single-precision respectively.
 
-\begin{figure}[h!]
-\centering
-\begin{subfigure}{0.23\textwidth}
-%% begin.rcode df.double, include=T, echo=F, fig.height=2.4, fig.width=3
-%   histogram(~dF, data=data.double_clear, xlab='Relative error', scales=list(x=list(log=T)))
-%% end.rcode
-\caption{$\Delta_f$}
-\end{subfigure}
-\begin{subfigure}{0.23\textwidth}
-%% begin.rcode dr.double, include=T, echo=F, fig.height=2.4, fig.width=3
-%   histogram(~dR, data=data.double_clear, xlab='Error', scales=list(x=list(log=T)))
-%% end.rcode
-\caption{$\Delta_R$}
-\end{subfigure}
-\begin{subfigure}{0.23\textwidth}
-%% begin.rcode dc.double, include=T, echo=F, fig.height=2.4, fig.width=3
-%   histogram(~dC, data=data.double_clear, xlab='Relative error', scales=list(x=list(log=T)))
-%% end.rcode
-\caption{$\Delta_C$}
-\end{subfigure}
-\begin{subfigure}{0.23\textwidth}
-%% begin.rcode t.double, include=T, echo=F, fig.height=2.4, fig.width=3
-%   histogram(~dt, data=data.double_clear, xlab='Execution time (s)', scales=list(x=list(log=T)))
-%% end.rcode
-\caption{$t$}
-\end{subfigure}
-\caption{Evaluation results (noize-free, double-precision)}
-\label{fig:single}
-\end{figure}
 
-\begin{figure}[h!]
-\centering
-\begin{subfigure}{0.23\textwidth}
-%% begin.rcode df.single, include=T, echo=F, fig.height=2.4, fig.width=3
-%   histogram(~dF, data=data.single_clear, xlab='Relative error', scales=list(x=list(log=T)))
-%% end.rcode
-\caption{$\Delta_f$}
-\end{subfigure}
-\begin{subfigure}{0.23\textwidth}
-%% begin.rcode dr.single, include=T, echo=F, fig.height=2.4, fig.width=3
-%   histogram(~dR, data=data.single_clear, xlab='Error', scales=list(x=list(log=T)))
-%% end.rcode
-\caption{$\Delta_R$}
-\end{subfigure}
-\begin{subfigure}{0.23\textwidth}
-%% begin.rcode dc.single, include=T, echo=F, fig.height=2.4, fig.width=3
-%   histogram(~dC, data=data.single_clear, xlab='Relative error', scales=list(x=list(log=T)))
-%% end.rcode
-\caption{$\Delta_C$}
-\end{subfigure}
-\begin{subfigure}{0.23\textwidth}
-%% begin.rcode t.single, include=T, echo=F, fig.height=2.4, fig.width=3
-%   histogram(~dt, data=data.single_clear, xlab='Execution time (s)', scales=list(x=list(log=T)))
-%% end.rcode
-\caption{$t$}
-\end{subfigure}
-\caption{Evaluation results (noize-free, single-precision)}
-\label{fig:double}
-\end{figure}
-
-For the time the mean was $\rinline{round(mean(data.double_clear$dt*1000),digits=2)}ms$ and $\rinline{round(mean(data.single_clear$dt*1000),digits=2)}ms$ and the median: $\rinline{round(median(data.double_clear$dt*1000),digits=2)}ms$ and \item  median $\rinline{round(median(data.single_clear$dt*1000),digits=2)}ms$ for double- and single-precision respectively. Timings in different precision modes are pretty similar due to
+%For the time the mean was $\rinline{round(mean(data.double_clear$dt*1000),digits=2)}ms$ and $\rinline{round(mean(data.single_clear$dt*1000),digits=2)}ms$ and the median: $\rinline{round(median(data.double_clear$dt*1000),digits=2)}ms$ and \item  median $\rinline{round(median(data.single_clear$dt*1000),digits=2)}ms$ for double- and single-precision respectively. Timings in different precision modes are pretty similar due to
             \begin{itemize}
                 \item Lots of scalar code in elimination template preparation stage
                 \item Several conversions between double- and single-precision are still present in the generated C-code
@@ -185,70 +118,7 @@ For the time the mean was $\rinline{round(mean(data.double_clear$dt*1000),digits
 
 
 The algorithm was also tested on a synthetic data with added Gaussian zero-mean noise. The implementation was compared in double- and single-precision. As can be seen in \ref{fig:noisy}.
-%%begin.rcode echo=F
-%st00.single <- data.frame(data.single$stdev0.0)
-%names(st00.single) <- c('stdev')
-%st00.single$precision <- 'single'
-%st00.double <- data.frame(data.double$stdev0.0)
-%names(st00.double) <- c('stdev')
-%st00.double$precision <- 'double'
-%triple00 <- rbind(st00.single, st00.double)
-%triple00 <- triple00[!(triple00$stdev<0),]
 
-%st05.single <- data.frame(data.single$stdev0.5)
-%names(st05.single) <- c('stdev')
-%st05.single$precision <- 'single'
-%st05.double <- data.frame(data.double$stdev0.5)
-%names(st05.double) <- c('stdev')
-%st05.double$precision <- 'double'
-%triple05 <- rbind(st05.single, st05.double)
-%triple05 <- triple05[!(triple05$stdev<0),]
-
-%st10.single <- data.frame(data.single$stdev1.0)
-%names(st10.single) <- c('stdev')
-%st10.single$precision <- 'single'
-%st10.double <- data.frame(data.double$stdev1.0)
-%names(st10.double) <- c('stdev')
-%st10.double$precision <- 'double'
-%triple10 <- rbind(st10.single, st10.double)
-%triple10 <- triple10[!(triple10$stdev<0),]
-
-%st15.single <- data.frame(data.single$stdev1.5)
-%names(st15.single) <- c('stdev')
-%st15.single$precision <- 'single'
-%st15.double <- data.frame(data.double$stdev1.5)
-%names(st15.double) <- c('stdev')
-%st15.double$precision <- 'double'
-%triple15 <- rbind(st15.single, st15.double)
-%triple15 <- triple15[!(triple15$stdev<0),]
-%%end.rcode
-\begin{figure}[h!]
-\begin{subfigure}[b]{0.475\textwidth}
-%%begin.rcode message=F, warning=F, echo=F, fig.height=1.2, fig.width=3
-%ggplot(triple00, aes(stdev, fill = precision)) + geom_density(alpha = 0.2) + scale_x_log10() + xlab("stdev = 0.0")
-%%end.rcode
-\end{subfigure}
-\hfill
-\begin{subfigure}[b]{0.475\textwidth}
-%%begin.rcode message=F, warning=F, echo=F, fig.height=1.2, fig.width=3
-%ggplot(triple05, aes(stdev, fill = precision)) + geom_density(alpha = 0.2) + scale_x_log10() + xlab("stdev = 0.5")
-%%end.rcode
-\end{subfigure}
-\vskip\baselineskip
-\begin{subfigure}[b]{0.475\textwidth}
-%%begin.rcode message=F, warning=F, echo=F, fig.height=1.2, fig.width=3
-%ggplot(triple10, aes(stdev, fill = precision)) + geom_density(alpha = 0.2) + scale_x_log10() + xlab("stdev = 1.0")
-%%end.rcode
-\end{subfigure}
-\quad
-\begin{subfigure}[b]{0.475\textwidth}
-%%begin.rcode message=F, warning=F, echo=F, fig.height=1.2, fig.width=3
-%ggplot(triple15, aes(stdev, fill = precision)) + geom_density(alpha = 0.2) + scale_x_log10() + xlab("stdev = 1.5") 
-%%end.rcode
-\end{subfigure}
-\caption{P3.5P on data with zero-mean Gaussian noise and different standard deviations}
-\label{fig:noisy}
-\end{figure}
 
 %\subsection{Summary}
 Overall, the implemented algorithm exhibits reasonable accuracy but could have shown better speed.
@@ -265,103 +135,358 @@ The general case of the algorithm was implemented in MATLAB. The authors of the 
 
 \subsection{P4Pf}
 
-%begin.rcode echo=F
-%focal.p3.5p  <- data.frame(data.double$stdev0.0)
-%names(focal.p3.5p) <- c('df')
-%focal.p3.5p$algorithm <- 'P3.5P'
 
-%focal.p4p  <- data.frame(data.P4Pf$df)
-%names(focal.p4p) <- c('df')
-%focal.p4p$algorithm <- 'P4P.3Q3'
-
-
-%focal_double <- rbind(focal.p3.5p , focal.p4p )
-%focal_double <- focal_double[!(focal_double$df<0),]
-%%end.rcode
    3Q3 algorithm is directly used in P4Pf algorithm. Current implementation of P4Pf thus far obtains only focal length estimation for non-degenerate cases which was evaluated on generated data by relative accuracy $\Delta_f = \frac{|f - f^*|}{|f^*|}$, as can be seen in \ref{fig:p4p}
-   \begin{figure}[h!]
-	\begin{subfigure}[b]{0.4\textwidth}
-        %% begin.rcode message=F, warning=F, echo=F, fig.height=2.4, fig.width=3
-        % ggplot(data.P4Pf, aes(x=df)) + geom_histogram() + scale_x_log10() + xlab("relative error (P4P+3Q3)")
-        %% end.rcode
-	%\caption{$\Delta_f$ for P4Pf+3Q3}
-	\end{subfigure}
-	\begin{subfigure}[b]{0.475\textwidth}
-	%%begin.rcode message=F, warning=F, echo=F, fig.height=2.4, fig.width=4
-	%ggplot(focal_double, aes(df, fill = algorithm)) + geom_density(alpha = 0.2) + scale_x_log10() + xlab("relative error (comparison)") 
-	%%end.rcode
-	%\capion{$\Delta_f$}	
-	\end{subfigure}
-   \caption{Evaluaiton results of $\Delta_f$ (noise-free, double-precision)}	
-   \label{fig:p4p}
-   \end{figure} 
 
 \section{New data!!!!}
 
-%%begin.rcode echo=F
+%%begin.rcode dividing_P35P,  echo=F
+
 %P35P.dF.single <- data.frame(data.P35P.single$dF)
 %names(P35P.dF.single) <- c('dF')
 %P35P.dF.single$algorithm <- 'P3.5Pf'
-%P4P.dF.single <- data.frame(data.P4P.single$dF)
-%names(P4P.dF.single) <- c('dF')
-%P4P.dF.single$algorithm <- 'P4Pf'
-%dF.comp <- rbind(P35P.dF.single, P4P.dF.single)
-%dF.comp <- dF.comp[!(dF.comp$dF<0),]
+%P35P.dF.single$precision <- 'single'
 
 %P35P.dR.single <- data.frame(data.P35P.single$dR)
 %names(P35P.dR.single) <- c('dR')
 %P35P.dR.single$algorithm <- 'P3.5Pf'
-%P4P.dR.single <- data.frame(data.P4P.single$dR)
-%names(P4P.dR.single) <- c('dR')
-%P4P.dR.single$algorithm <- 'P4Pf'
-%dR.comp <- rbind(P35P.dR.single, P4P.dR.single)
-%dR.comp <- dR.comp[!(dR.comp$dR<0),]
+%P35P.dR.single$precision <- 'single'
 
 %P35P.dC.single <- data.frame(data.P35P.single$dC)
 %names(P35P.dC.single) <- c('dC')
 %P35P.dC.single$algorithm <- 'P3.5Pf'
-%P4P.dC.single <- data.frame(data.P4P.single$dC)
-%names(P4P.dC.single) <- c('dC')
-%P4P.dC.single$algorithm <- 'P4Pf'
-%dC.comp <- rbind(P35P.dC.single, P4P.dC.single)
-%dC.comp <- dC.comp[!(dC.comp$dC<0),]
+%P35P.dC.single$precision <- 'single'
 
 %P35P.dt.single <- data.frame(data.P35P.single$dt)
 %names(P35P.dt.single) <- c('dt')
 %P35P.dt.single$algorithm <- 'P3.5Pf'
+%P35P.dt.single$precision <- 'single'
+
+
+%P35P.dF.double <- data.frame(data.P35P.double$dF)
+%names(P35P.dF.double) <- c('dF')
+%P35P.dF.double$algorithm <- 'P3.5Pf'
+%P35P.dF.double$precision <- 'double'
+
+%P35P.dR.double <- data.frame(data.P35P.double$dR)
+%names(P35P.dR.double) <- c('dR')
+%P35P.dR.double$algorithm <- 'P3.5Pf'
+%P35P.dR.double$precision <- 'double'
+
+%P35P.dC.double <- data.frame(data.P35P.double$dC)
+%names(P35P.dC.double) <- c('dC')
+%P35P.dC.double$algorithm <- 'P3.5Pf'
+%P35P.dC.double$precision <- 'double'
+
+%P35P.dt.double <- data.frame(data.P35P.double$dt)
+%names(P35P.dt.double) <- c('dt')
+%P35P.dt.double$algorithm <- 'P3.5Pf'
+%P35P.dt.double$precision <- 'double'
+%%end.rcode
+
+
+%%begin.rcode dividing_P4P,  echo=F
+%P4P.dF.single <- data.frame(data.P4P.single$dF)
+%names(P4P.dF.single) <- c('dF')
+%P4P.dF.single$algorithm <- 'P4Pf'
+%P4P.dF.single$precision <- 'single'
+
+%P4P.dR.single <- data.frame(data.P4P.single$dR)
+%names(P4P.dR.single) <- c('dR')
+%P4P.dR.single$algorithm <- 'P4Pf'
+%P4P.dR.single$precision <- 'single'
+
+%P4P.dC.single <- data.frame(data.P4P.single$dC)
+%names(P4P.dC.single) <- c('dC')
+%P4P.dC.single$algorithm <- 'P4Pf'
+%P4P.dC.single$precision <- 'single'
+
 %P4P.dt.single <- data.frame(data.P4P.single$dt)
 %names(P4P.dt.single) <- c('dt')
 %P4P.dt.single$algorithm <- 'P4Pf'
-%dt.comp <- rbind(P35P.dt.single, P4P.dt.single)
-%dt.comp <- dt.comp[!(dt.comp$dt<0),]
+%P4P.dt.single$precision <- 'single'
 
+
+%P4P.dF.double <- data.frame(data.P4P.double$dF)
+%names(P4P.dF.double) <- c('dF')
+%P4P.dF.double$algorithm <- 'P4Pf'
+%P4P.dF.double$precision <- 'double'
+
+%P4P.dR.double <- data.frame(data.P4P.double$dR)
+%names(P4P.dR.double) <- c('dR')
+%P4P.dR.double$algorithm <- 'P4Pf'
+%P4P.dR.double$precision <- 'double'
+
+%P4P.dC.double <- data.frame(data.P4P.double$dC)
+%names(P4P.dC.double) <- c('dC')
+%P4P.dC.double$algorithm <- 'P4Pf'
+%P4P.dC.double$precision <- 'double'
+
+%P4P.dt.double <- data.frame(data.P4P.double$dt)
+%names(P4P.dt.double) <- c('dt')
+%P4P.dt.double$algorithm <- 'P4Pf'
+%P4P.dt.double$precision <- 'double'
 %%end.rcode
+
+
+%%begin.rcode binding_single,  echo=F
+%dF.comp.single <- rbind(P35P.dF.single, P4P.dF.single)
+%dF.comp.single <- dF.comp.single[!(dF.comp.single$dF<0),]
+
+%dR.comp.single  <- rbind(P35P.dR.single, P4P.dR.single)
+%dR.comp.single  <- dR.comp.single[!(dR.comp.single$dR<0),]
+
+%dC.comp.single  <- rbind(P35P.dC.single, P4P.dC.single)
+%dC.comp.single  <- dC.comp.single[!(dC.comp.single$dC<0),]
+
+%dt.comp.single  <- rbind(P35P.dt.single, P4P.dt.single)
+%dt.comp.single  <- dt.comp.single[!(dt.comp.single$dt<0),]
+%%end.rcode
+
+%%begin.rcode binding_double,  echo=F
+%dF.comp.double <- rbind(P35P.dF.double, P4P.dF.double)
+%dF.comp.double <- dF.comp.double[!(dF.comp.double$dF<0),]
+
+%dR.comp.double  <- rbind(P35P.dR.double, P4P.dR.double)
+%dR.comp.double  <- dR.comp.double[!(dR.comp.double$dR<0),]
+
+%dC.comp.double  <- rbind(P35P.dC.double, P4P.dC.double)
+%dC.comp.double  <- dC.comp.double[!(dC.comp.double$dC<0),]
+
+%dt.comp.double  <- rbind(P35P.dt.double, P4P.dt.double)
+%dt.comp.double  <- dt.comp.double[!(dt.comp.double$dt<0),]
+%%end.rcode
+
+%%begin.rcode binding_P35P,  echo=F
+%dF.comp.p3.5p <- rbind(P35P.dF.single, P35P.dF.double)
+%dF.comp.p3.5p <- dF.comp.p3.5p[!(dF.comp.p3.5p$dF<0),]
+
+%dR.comp.p3.5p  <- rbind(P35P.dR.single, P35P.dR.double)
+%dR.comp.p3.5p  <- dR.comp.p3.5p[!(dR.comp.p3.5p$dR<0),]
+
+%dC.comp.p3.5p  <- rbind(P35P.dC.single, P35P.dC.double)
+%dC.comp.p3.5p  <- dC.comp.p3.5p[!(dC.comp.p3.5p$dC<0),]
+
+%dt.comp.p3.5p  <- rbind(P35P.dt.single, P35P.dt.double)
+%dt.comp.p3.5p  <- dt.comp.p3.5p[!(dt.comp.p3.5p$dt<0),]
+%%end.rcode
+
+%%begin.rcode binding_P4P,  echo=F
+%dF.comp.p4p <- rbind(P4P.dF.single, P4P.dF.double)
+%dF.comp.p4p <- dF.comp.p4p[!(dF.comp.p4p$dF<0),]
+
+%dR.comp.p4p  <- rbind(P4P.dR.single, P4P.dR.double)
+%dR.comp.p4p  <- dR.comp.p4p[!(dR.comp.p4p$dR<0),]
+
+%dC.comp.p4p  <- rbind(P4P.dC.single, P4P.dC.double)
+%dC.comp.p4p  <- dC.comp.p4p[!(dC.comp.p4p$dC<0),]
+
+%dt.comp.p4p  <- rbind(P4P.dt.single, P4P.dt.double)
+%dt.comp.p4p  <- dt.comp.p4p[!(dt.comp.p4p$dt<0),]
+%%end.rcode
+
+
+
+
 \begin{figure}[h!]
 \begin{subfigure}[b]{0.475\textwidth}
 %%begin.rcode message=F, warning=F, echo=F, fig.height=1.2, fig.width=3
-%ggplot(dF.comp, aes(dF, fill = algorithm)) + geom_density(alpha = 0.2) + scale_x_log10() + xlab("focus")
+%ggplot(dF.comp.p3.5p, aes(dF, fill = precision)) + geom_density(alpha = 0.2) + scale_x_log10() + xlab("focus")
 %%end.rcode
 \end{subfigure}
 \hfill
 \begin{subfigure}[b]{0.475\textwidth}
 %%begin.rcode message=F, warning=F, echo=F, fig.height=1.2, fig.width=3
-%ggplot(dR.comp, aes(dR, fill = algorithm)) + geom_density(alpha = 0.2) + scale_x_log10() + xlab("rotation")
+%ggplot(dR.comp.p3.5p, aes(dR, fill = precision)) + geom_density(alpha = 0.2) + scale_x_log10() + xlab("rotation")
 %%end.rcode
 \end{subfigure}
 \vskip\baselineskip
 \begin{subfigure}[b]{0.475\textwidth}
 %%begin.rcode message=F, warning=F, echo=F, fig.height=1.2, fig.width=3
-%ggplot(dC.comp, aes(dC, fill = algorithm)) + geom_density(alpha = 0.2) + scale_x_log10() + xlab("translation")
+%ggplot(dC.comp.p3.5p, aes(dC, fill = precision)) + geom_density(alpha = 0.2) + scale_x_log10() + xlab("translation")
 %%end.rcode
 \end{subfigure}
 \quad
 \begin{subfigure}[b]{0.475\textwidth}
 %%begin.rcode message=F, warning=F, echo=F, fig.height=1.2, fig.width=3
-%ggplot(dt.comp, aes(dt, fill = algorithm)) + geom_density(alpha = 0.2) + scale_x_log10() + xlab("time") 
+%ggplot(dt.comp.p3.5p, aes(dt, fill = precision)) + geom_density(alpha = 0.2) + scale_x_log10() + xlab("time") 
 %%end.rcode
 \end{subfigure}
-\caption{P3.5P and on noise-free data in single-precision}
+\caption{P3.5P on noise-free data in single- and double-precision}
+\label{fig:p35p}
+\end{figure}
+
+\begin{figure}[h!]
+\begin{subfigure}[b]{0.475\textwidth}
+%%begin.rcode message=F, warning=F, echo=F, fig.height=1.2, fig.width=3
+%ggplot(dF.comp.p4p, aes(dF, fill = precision)) + geom_density(alpha = 0.2) + scale_x_log10() + xlab("focus")
+%%end.rcode
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.475\textwidth}
+%%begin.rcode message=F, warning=F, echo=F, fig.height=1.2, fig.width=3
+%ggplot(dR.comp.p4p, aes(dR, fill = precision)) + geom_density(alpha = 0.2) + scale_x_log10() + xlab("rotation")
+%%end.rcode
+\end{subfigure}
+\vskip\baselineskip
+\begin{subfigure}[b]{0.475\textwidth}
+%%begin.rcode message=F, warning=F, echo=F, fig.height=1.2, fig.width=3
+%ggplot(dC.comp.p4p, aes(dC, fill = precision)) + geom_density(alpha = 0.2) + scale_x_log10() + xlab("translation")
+%%end.rcode
+\end{subfigure}
+\quad
+\begin{subfigure}[b]{0.475\textwidth}
+%%begin.rcode message=F, warning=F, echo=F, fig.height=1.2, fig.width=3
+%ggplot(dt.comp.p4p, aes(dt, fill = precision)) + geom_density(alpha = 0.2) + scale_x_log10() + xlab("time") 
+%%end.rcode
+\end{subfigure}
+\caption{P4P on noise-free data in single- and double-precision}
+\label{fig:p35p}
+\end{figure}
+
+\begin{figure}[h!]
+\begin{subfigure}[b]{0.475\textwidth}
+%%begin.rcode message=F, warning=F, echo=F, fig.height=1.2, fig.width=3
+%ggplot(dF.comp.double, aes(dF, fill = algorithm)) + geom_density(alpha = 0.2) + scale_x_log10() + xlab("focus")
+%%end.rcode
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.475\textwidth}
+%%begin.rcode message=F, warning=F, echo=F, fig.height=1.2, fig.width=3
+%ggplot(dR.comp.double, aes(dR, fill = algorithm)) + geom_density(alpha = 0.2) + scale_x_log10() + xlab("rotation")
+%%end.rcode
+\end{subfigure}
+\vskip\baselineskip
+\begin{subfigure}[b]{0.475\textwidth}
+%%begin.rcode message=F, warning=F, echo=F, fig.height=1.2, fig.width=3
+%ggplot(dC.comp.double, aes(dC, fill = algorithm)) + geom_density(alpha = 0.2) + scale_x_log10() + xlab("translation")
+%%end.rcode
+\end{subfigure}
+\quad
+\begin{subfigure}[b]{0.475\textwidth}
+%%begin.rcode message=F, warning=F, echo=F, fig.height=1.2, fig.width=3
+%ggplot(dt.comp.double, aes(dt, fill = algorithm)) + geom_density(alpha = 0.2) + scale_x_log10() + xlab("time") 
+%%end.rcode
+\end{subfigure}
+\caption{P3.5P and P4P on noise-free data in double-precision}
+\label{fig:comp_double}
+\end{figure}
+
+
+\begin{figure}[h!]
+\begin{subfigure}[b]{0.475\textwidth}
+%%begin.rcode message=F, warning=F, echo=F, fig.height=1.2, fig.width=3
+%ggplot(dF.comp.single, aes(dF, fill = algorithm)) + geom_density(alpha = 0.2) + scale_x_log10() + xlab("focus")
+%%end.rcode
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.475\textwidth}
+%%begin.rcode message=F, warning=F, echo=F, fig.height=1.2, fig.width=3
+%ggplot(dR.comp.single, aes(dR, fill = algorithm)) + geom_density(alpha = 0.2) + scale_x_log10() + xlab("rotation")
+%%end.rcode
+\end{subfigure}
+\vskip\baselineskip
+\begin{subfigure}[b]{0.475\textwidth}
+%%begin.rcode message=F, warning=F, echo=F, fig.height=1.2, fig.width=3
+%ggplot(dC.comp.single, aes(dC, fill = algorithm)) + geom_density(alpha = 0.2) + scale_x_log10() + xlab("translation")
+%%end.rcode
+\end{subfigure}
+\quad
+\begin{subfigure}[b]{0.475\textwidth}
+%%begin.rcode message=F, warning=F, echo=F, fig.height=1.2, fig.width=3
+%ggplot(dt.comp.single, aes(dt, fill = algorithm)) + geom_density(alpha = 0.2) + scale_x_log10() + xlab("time") 
+%%end.rcode
+\end{subfigure}
+\caption{P3.5P and P4P on noise-free data in single-precision}
 \label{fig:comp_single}
+\end{figure}
+
+
+%begin.rcode dividing_noisy_P35P,  echo=F
+
+%P35P.std0.0.single<- data.frame(data.P35P.noisy$std0.0)
+%names(P35P.std0.0.single) <- c('std0.0')
+%P35P.std0.0.single$algorithm <- 'P3.5Pf'
+%P35P.std0.0.single$precision <- 'single'
+
+%P35P.std0.5.single <- data.frame(data.P35P.noisy$std0.5)
+%names(P35P.std0.5.single) <- c('std0.5')
+%P35P.std0.5.single$algorithm <- 'P3.5Pf'
+%P35P.std0.5.single$precision <- 'single'
+
+%P35P.std1.0.single <- data.frame(data.P35P.noisy$std1.0)
+%names(P35P.std1.0.single) <- c('std1.0')
+%P35P.std1.0.single$algorithm <- 'P3.5Pf'
+%P35P.std1.0.single$precision <- 'single'
+
+%P35P.std1.5.single <- data.frame(data.P35P.noisy$std1.5)
+%names(P35P.std1.5.single) <- c('std1.5')
+%P35P.std1.5.single$algorithm <- 'P3.5Pf'
+%P35P.std1.5.single$precision <- 'single'
+%%end.rcode
+
+%begin.rcode dividing_noisy_P4P,  echo=F
+%P4P.std0.0.single<- data.frame(data.P4P.noisy$std0.0)
+%names(P4P.std0.0.single) <- c('std0.0')
+%P4P.std0.0.single$algorithm <- 'P4Pf'
+%P4P.std0.0.single$precision <- 'single'
+
+%P4P.std0.5.single <- data.frame(data.P4P.noisy$std0.5)
+%names(P4P.std0.5.single) <- c('std0.5')
+%P4P.std0.5.single$algorithm <- 'P4Pf'
+%P4P.std0.5.single$precision <- 'single'
+
+%P4P.std1.0.single <- data.frame(data.P4P.noisy$std1.0)
+%names(P4P.std1.0.single) <- c('std1.0')
+%P4P.std1.0.single$algorithm <- 'P4Pf'
+%P4P.std1.0.single$precision <- 'single'
+
+%P4P.std1.5.single <- data.frame(data.P4P.noisy$std1.5)
+%names(P4P.std1.5.single) <- c('std1.5')
+%P4P.std1.5.single$algorithm <- 'P4Pf'
+%P4P.std1.5.single$precision <- 'single'
+%%end.rcode
+
+%%begin.rcode binding_noisy,  echo=F
+%std0.0.single <- rbind(P4P.std0.0.single, P35P.std0.0.single)
+%std0.0.single <- std0.0.single[!(std0.0.single$std0.0<0),]
+
+%std0.5.single  <- rbind(P4P.std0.5.single, P35P.std0.5.single)
+%std0.5.single  <- std0.5.single[!(std0.5.single$std0.5<0),]
+
+%std1.0.single  <- rbind(P4P.std1.0.single, P35P.std1.0.single)
+%std1.0.single  <- std1.0.single[!(std1.0.single$std1.0<0),]
+
+%std1.5.single  <- rbind(P4P.std1.5.single, P35P.std1.5.single)
+%std1.5.single  <- std1.5.single[!(std1.5.single$std1.5<0),]
+%%end.rcode
+
+\begin{figure}[h!]
+\begin{subfigure}[b]{0.475\textwidth}
+%%begin.rcode message=F, warning=F, echo=F, fig.height=1.2, fig.width=3
+%ggplot(std0.0.single, aes(std0.0, fill = algorithm)) + geom_density(alpha = 0.2) + scale_x_log10() + xlab("std0.0")
+%%end.rcode
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.475\textwidth}
+%%begin.rcode message=F, warning=F, echo=F, fig.height=1.2, fig.width=3
+%ggplot(std0.5.single, aes(std0.5, fill = algorithm)) + geom_density(alpha = 0.2) + scale_x_log10() + xlab("std0.5")
+%%end.rcode
+\end{subfigure}
+\vskip\baselineskip
+\begin{subfigure}[b]{0.475\textwidth}
+%%begin.rcode message=F, warning=F, echo=F, fig.height=1.2, fig.width=3
+%ggplot(std1.0.single, aes(std1.0, fill = algorithm)) + geom_density(alpha = 0.2) + scale_x_log10() + xlab("std1.0")
+%%end.rcode
+\end{subfigure}
+\quad
+\begin{subfigure}[b]{0.475\textwidth}
+%%begin.rcode message=F, warning=F, echo=F, fig.height=1.2, fig.width=3
+%ggplot(std1.5.single, aes(std1.5, fill = algorithm)) + geom_density(alpha = 0.2) + scale_x_log10() + xlab("std1.5") 
+%%end.rcode
+\end{subfigure}
+\caption{P3.5P and P4P on noisy data in single-precision}
+\label{fig:noisy}
 \end{figure}
 
 %\subsection{Summary}
