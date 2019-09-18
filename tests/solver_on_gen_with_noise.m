@@ -3,9 +3,9 @@
 
 function stats = solver_on_gen_with_noise(N, eps, solver_handle, csv_filename)
     stats = zeros(N, 11);
-
+    sol_num_stats = zeros(N, 11);
     for d = 0:0.5:5
-        curr_stats = zeros(N, 1);
+        curr_stats = zeros(N, 2);
 
 %         p35p = @(X,x,y,e)p35p_solver(X,x,y,e);
 %         %uncomment for MEX-based solver
@@ -44,17 +44,19 @@ function stats = solver_on_gen_with_noise(N, eps, solver_handle, csv_filename)
 %                        diff_C = diffC;
                 end
             end
-
+	    curr_stats(ind, 2) = solution_num;
             if solution_num ~= 0
 %                 stats(:, ind) = [min_diff / f_gen; diff_R; diff_C];
-                curr_stats(ind) = min_diff / f_gen;  
+                curr_stats(ind, 1) = min_diff / f_gen;  
             else
-                curr_stats(ind) = -1;  
+                curr_stats(ind, 1) = -1;  
             end
         end
         toc
-        stats(:, 2*d + 1) = curr_stats;
+        stats(:, 2*d + 1) = curr_stats(:, 1);
+	sol_num_stats(:, 2*d + 1) = curr_stats(:, 2);
     end
     headers = 'std0.0,std0.5,std1.0,std1.5,std2.0,std2.5,std3.0,std3.5,std4.0,std4.5,std5.0';
+
     write_to_csv(csv_filename, stats, headers);
 end

@@ -50,8 +50,10 @@
 %data.P4P.double <-read.csv('./stats/stats_p4p_double.csv')
 %data.P35P.single <-read.csv('./stats/stats_p35p_single.csv')
 %data.P35P.double <-read.csv('./stats/stats_p35p_double.csv')
-%data.P4P.noisy <- read.csv('./stats/stats_p4p_noisy.csv');
-%data.P35P.noisy <- read.csv('./stats/stats_p35p_noisy.csv');
+%data.P4P.noisy <- read.csv('./stats/stats_p4p_noisy.csv')
+%data.P35P.noisy <- read.csv('./stats/stats_p35p_noisy.csv')
+%data.P4P.num <- read.csv('./stats/sol_numstats_p4p_noisy.csv')
+%data.P35P.num <- read.csv('./stats/sol_numstats_p35p_noisy.csv')
 % N <- 1e6
 %% end.rcode
 
@@ -63,82 +65,6 @@
 %\date{}
 
 \maketitle
-
-
-\section{Abstract}
-
-The goal of my work is to implement a good algorithm that solves the problem of localization of a camera and evaluation of its focal length. 
-Two algorithms were chosen to be considered: P3.5Pf by \cite{wu} and P4Pf with 3Q3 by \cite{kukelova}. 
-Algorithms were implemented on MATLAB and transformed using MATLAB Coder. 
-The first algorithm showed good accuracy results but its speed results were only satisfactory, so the decision have been made to consider the second algorithm that could be faster.
-
-%The second algorithm was implemented up until the estimation of the focal length in MATLAB. 
-%The implementation showed comparable results with the first implementation in double-precision.
-%So the plan is to finish the 3Q3 implementation and compare the time and accuracy performance of the two algorithms in single-precision.
-
-
-\section{Problem definition}
-
-Perspective-n-Point (PnP) is a problem where given $n$ correspondencies between image points and points in space are used to evaluate unknown camera parameters. 
-In our case these parameters are rotation $\hat{R}$, translation $\hat{T}$ and a focal distance $\hat{f}$ (in terms of a classic pin-hole model). 
-
-\section{P3.5Pf}
-\subsection{Algorithm overview}
-
-The main intrest of the paper \cite{wu} is that the algorithm uses a minimal amount of point coerrespondencies, which is 3.5, where one half of a point means that only one of the coordinates from the correspondace needs to be used to find solutions. Extra coordinate is used in the end to filter candidate solutions by checking the reprojection error. Such filtration almost always provides one solution on good data and zero solutions for outliers which considerably fastens RANSAC application.
-
-%By changing classic parametrization and by eliminating variables the author finds themself with %a system of 4 degree 6 polynomials with 2 unknowns that they solved by using standard Gr\"{o}%bner basis.
-
-%In this paper the author rejected the usual parametrization of a camera matrix $P = KR[I|-C]$  %and replaced it with another one, thus removing extra trivial solutions and solutions with the %same projection matrix, but negated focal length and $180^{\circ}$ translation around $z$-axis.
-%They then parametrized matrix R using quaternions and got a problem with $7$ unknowns to solve. 
-%After variable elimination they found themselves with a system of 4 degree 6 polynomials with 2 unknowns that they solved by using standard Gr\"{o}bner basis.
-%The candidate solutions are then filtered by 
-
-    %The implemented algorithm provides estimates for camera pose $\hat{R}$ and $\hat{C}$, as well as focal length $\hat{f}$.
-
-%\subsection{Implementation performance}
-    The general case of the algorithm was implemented in MATLAB. 
-The author describes different degenerate cases but states that these cases are highly unlikely, so considering the future usage of RANSAC, consideration of such cases was ignored.
-The code was then transformed by MATLAB Coder and was evaluated firstly on noise-free synthetic data and then on synthetic data with zero-mean Gaussian noise.
-
-    For noise-free case the following metrics were evaluated: r\begin{itemize}
-        \item Relative accuracy of focal length estimation $\Delta_f=\frac{\left\lvert f - \hat{f}\right\rvert}{f}$
-        \item Relative accuracy of camera center translation estimation $\Delta_C = \frac{\left\lVert C - \hat{C}\right\rVert}{\left\lVert C\right\rVert}$
-        \item Accuracy of orientation estimation            as [normalized] Frobenius norm of the difference $\Delta_R = \frac{\left\lVert R - \hat{R}\right\rVert_F}{3}$
-        \item Execution time $t$
-    \end{itemize}
-The plots can be seen in \ref{fig:double} and \ref{fig:single} for double- and single-precision respectively.
-
-
-%For the time the mean was $\rinline{round(mean(data.double_clear$dt*1000),digits=2)}ms$ and $\rinline{round(mean(data.single_clear$dt*1000),digits=2)}ms$ and the median: $\rinline{round(median(data.double_clear$dt*1000),digits=2)}ms$ and \item  median $\rinline{round(median(data.single_clear$dt*1000),digits=2)}ms$ for double- and single-precision respectively. Timings in different precision modes are pretty similar due to
-            \begin{itemize}
-                \item Lots of scalar code in elimination template preparation stage
-                \item Several conversions between double- and single-precision are still present in the generated C-code
-            \end{itemize}
-
-
-The algorithm was also tested on a synthetic data with added Gaussian zero-mean noise. The implementation was compared in double- and single-precision. As can be seen in \ref{fig:noisy}.
-
-
-%\subsection{Summary}
-Overall, the implemented algorithm exhibits reasonable accuracy but could have shown better speed.
-
-\section{P4Pf}
-
-The next algorithm is by \cite{kukelova}. The authors suggest an efficient way of solving a system of 3 quadric equations in 3 unknowns (3Q3 problem) and reduce P4Pf problem to 3Q3 problem.
-
-\subsection{3Q3}
-
-The general case of the algorithm was implemented in MATLAB. The authors of the article provide different solutions for occurring degeneracies but they were yet ignored in the current implementation and are not reflected in the following evaluations.
-
-%The performance of the 3Q3 algorithm implementation was evaluated on generated data in double precision. In figure \ref{fig:3q3} is an evaluation of relative accuracy $\Delta_X = \frac{\min_{X\in S}\||X - X^*\|}{\|X^*\|}$, where $S\subset \mathbb{R}$ is a set of solutions returned by 3Q3 solver and $X^*$ is a solution for which the system of equations was generated:
-
-\subsection{P4Pf}
-
-
-   3Q3 algorithm is directly used in P4Pf algorithm. Current implementation of P4Pf thus far obtains only focal length estimation for non-degenerate cases which was evaluated on generated data by relative accuracy $\Delta_f = \frac{|f - f^*|}{|f^*|}$, as can be seen in \ref{fig:p4p}
-
-\section{New data!!!!}
 
 %%begin.rcode dividing_P35P,  echo=F
 
@@ -285,123 +211,6 @@ The general case of the algorithm was implemented in MATLAB. The authors of the 
 %dt.comp.p4p  <- dt.comp.p4p[!(dt.comp.p4p$dt<0),]
 %%end.rcode
 
-
-
-
-\begin{figure}[h!]
-\begin{subfigure}[b]{0.475\textwidth}
-%%begin.rcode message=F, warning=F, echo=F, fig.height=1.2, fig.width=3
-%ggplot(dF.comp.p3.5p, aes(dF, fill = precision)) + geom_density(alpha = 0.2) + scale_x_log10() + xlab("focus")
-%%end.rcode
-\end{subfigure}
-\hfill
-\begin{subfigure}[b]{0.475\textwidth}
-%%begin.rcode message=F, warning=F, echo=F, fig.height=1.2, fig.width=3
-%ggplot(dR.comp.p3.5p, aes(dR, fill = precision)) + geom_density(alpha = 0.2) + scale_x_log10() + xlab("rotation")
-%%end.rcode
-\end{subfigure}
-\vskip\baselineskip
-\begin{subfigure}[b]{0.475\textwidth}
-%%begin.rcode message=F, warning=F, echo=F, fig.height=1.2, fig.width=3
-%ggplot(dC.comp.p3.5p, aes(dC, fill = precision)) + geom_density(alpha = 0.2) + scale_x_log10() + xlab("translation")
-%%end.rcode
-\end{subfigure}
-\quad
-\begin{subfigure}[b]{0.475\textwidth}
-%%begin.rcode message=F, warning=F, echo=F, fig.height=1.2, fig.width=3
-%ggplot(dt.comp.p3.5p, aes(dt, fill = precision)) + geom_density(alpha = 0.2) + scale_x_log10() + xlab("time") 
-%%end.rcode
-\end{subfigure}
-\caption{P3.5P on noise-free data in single- and double-precision}
-\label{fig:p35p}
-\end{figure}
-
-\begin{figure}[h!]
-\begin{subfigure}[b]{0.475\textwidth}
-%%begin.rcode message=F, warning=F, echo=F, fig.height=1.2, fig.width=3
-%ggplot(dF.comp.p4p, aes(dF, fill = precision)) + geom_density(alpha = 0.2) + scale_x_log10() + xlab("focus")
-%%end.rcode
-\end{subfigure}
-\hfill
-\begin{subfigure}[b]{0.475\textwidth}
-%%begin.rcode message=F, warning=F, echo=F, fig.height=1.2, fig.width=3
-%ggplot(dR.comp.p4p, aes(dR, fill = precision)) + geom_density(alpha = 0.2) + scale_x_log10() + xlab("rotation")
-%%end.rcode
-\end{subfigure}
-\vskip\baselineskip
-\begin{subfigure}[b]{0.475\textwidth}
-%%begin.rcode message=F, warning=F, echo=F, fig.height=1.2, fig.width=3
-%ggplot(dC.comp.p4p, aes(dC, fill = precision)) + geom_density(alpha = 0.2) + scale_x_log10() + xlab("translation")
-%%end.rcode
-\end{subfigure}
-\quad
-\begin{subfigure}[b]{0.475\textwidth}
-%%begin.rcode message=F, warning=F, echo=F, fig.height=1.2, fig.width=3
-%ggplot(dt.comp.p4p, aes(dt, fill = precision)) + geom_density(alpha = 0.2) + scale_x_log10() + xlab("time") 
-%%end.rcode
-\end{subfigure}
-\caption{P4P on noise-free data in single- and double-precision}
-\label{fig:p35p}
-\end{figure}
-
-\begin{figure}[h!]
-\begin{subfigure}[b]{0.475\textwidth}
-%%begin.rcode message=F, warning=F, echo=F, fig.height=1.2, fig.width=3
-%ggplot(dF.comp.double, aes(dF, fill = algorithm)) + geom_density(alpha = 0.2) + scale_x_log10() + xlab("focus")
-%%end.rcode
-\end{subfigure}
-\hfill
-\begin{subfigure}[b]{0.475\textwidth}
-%%begin.rcode message=F, warning=F, echo=F, fig.height=1.2, fig.width=3
-%ggplot(dR.comp.double, aes(dR, fill = algorithm)) + geom_density(alpha = 0.2) + scale_x_log10() + xlab("rotation")
-%%end.rcode
-\end{subfigure}
-\vskip\baselineskip
-\begin{subfigure}[b]{0.475\textwidth}
-%%begin.rcode message=F, warning=F, echo=F, fig.height=1.2, fig.width=3
-%ggplot(dC.comp.double, aes(dC, fill = algorithm)) + geom_density(alpha = 0.2) + scale_x_log10() + xlab("translation")
-%%end.rcode
-\end{subfigure}
-\quad
-\begin{subfigure}[b]{0.475\textwidth}
-%%begin.rcode message=F, warning=F, echo=F, fig.height=1.2, fig.width=3
-%ggplot(dt.comp.double, aes(dt, fill = algorithm)) + geom_density(alpha = 0.2) + scale_x_log10() + xlab("time") 
-%%end.rcode
-\end{subfigure}
-\caption{P3.5P and P4P on noise-free data in double-precision}
-\label{fig:comp_double}
-\end{figure}
-
-
-\begin{figure}[h!]
-\begin{subfigure}[b]{0.475\textwidth}
-%%begin.rcode message=F, warning=F, echo=F, fig.height=1.2, fig.width=3
-%ggplot(dF.comp.single, aes(dF, fill = algorithm)) + geom_density(alpha = 0.2) + scale_x_log10() + xlab("focus")
-%%end.rcode
-\end{subfigure}
-\hfill
-\begin{subfigure}[b]{0.475\textwidth}
-%%begin.rcode message=F, warning=F, echo=F, fig.height=1.2, fig.width=3
-%ggplot(dR.comp.single, aes(dR, fill = algorithm)) + geom_density(alpha = 0.2) + scale_x_log10() + xlab("rotation")
-%%end.rcode
-\end{subfigure}
-\vskip\baselineskip
-\begin{subfigure}[b]{0.475\textwidth}
-%%begin.rcode message=F, warning=F, echo=F, fig.height=1.2, fig.width=3
-%ggplot(dC.comp.single, aes(dC, fill = algorithm)) + geom_density(alpha = 0.2) + scale_x_log10() + xlab("translation")
-%%end.rcode
-\end{subfigure}
-\quad
-\begin{subfigure}[b]{0.475\textwidth}
-%%begin.rcode message=F, warning=F, echo=F, fig.height=1.2, fig.width=3
-%ggplot(dt.comp.single, aes(dt, fill = algorithm)) + geom_density(alpha = 0.2) + scale_x_log10() + xlab("time") 
-%%end.rcode
-\end{subfigure}
-\caption{P3.5P and P4P on noise-free data in single-precision}
-\label{fig:comp_single}
-\end{figure}
-
-
 %begin.rcode dividing_noisy_P35P,  echo=F
 
 %P35P.std0.0.single<- data.frame(data.P35P.noisy$std0.0)
@@ -461,6 +270,192 @@ The general case of the algorithm was implemented in MATLAB. The authors of the 
 %std1.5.single  <- std1.5.single[!(std1.5.single$std1.5<0),]
 %%end.rcode
 
+%begin.rcode dividing_noisy_P35P_num,  echo=F
+
+%P35P.std0.0.num<- data.frame(data.P35P.num$std0.0)
+%names(P35P.std0.0.num) <- c('std0.0')
+%P35P.std0.0.num$algorithm <- 'P3.5Pf'
+%P35P.std0.0.num$precision <- 'single'
+
+%P35P.std0.5.num <- data.frame(data.P35P.num$std0.5)
+%names(P35P.std0.5.num) <- c('std0.5')
+%P35P.std0.5.num$algorithm <- 'P3.5Pf'
+%P35P.std0.5.num$precision <- 'single'
+
+%P35P.std1.0.num <- data.frame(data.P35P.num$std1.0)
+%names(P35P.std1.0.num) <- c('std1.0')
+%P35P.std1.0.num$algorithm <- 'P3.5Pf'
+%P35P.std1.0.num$precision <- 'single'
+
+%P35P.std1.5.num <- data.frame(data.P35P.num$std1.5)
+%names(P35P.std1.5.num) <- c('std1.5')
+%P35P.std1.5.num$algorithm <- 'P3.5Pf'
+%P35P.std1.5.num$precision <- 'single'
+%%end.rcode
+
+%begin.rcode dividing_noisy_P4P_num,  echo=F
+%P4P.std0.0.num<- data.frame(data.P4P.num$std0.0)
+%names(P4P.std0.0.num) <- c('std0.0')
+%P4P.std0.0.num$algorithm <- 'P4Pf'
+%P4P.std0.0.num$precision <- 'single'
+
+%P4P.std0.5.num <- data.frame(data.P4P.num$std0.5)
+%names(P4P.std0.5.num) <- c('std0.5')
+%P4P.std0.5.num$algorithm <- 'P4Pf'
+%P4P.std0.5.num$precision <- 'single'
+
+%P4P.std1.0.num <- data.frame(data.P4P.num$std1.0)
+%names(P4P.std1.0.num) <- c('std1.0')
+%P4P.std1.0.num$algorithm <- 'P4Pf'
+%P4P.std1.0.num$precision <- 'single'
+
+%P4P.std1.5.num <- data.frame(data.P4P.num$std1.5)
+%names(P4P.std1.5.num) <- c('std1.5')
+%P4P.std1.5.num$algorithm <- 'P4Pf'
+%P4P.std1.5.num$precision <- 'single'
+%%end.rcode
+
+%%begin.rcode binding_noisy_num,  echo=F
+%std0.0.num <- rbind(P4P.std0.0.num, P35P.std0.0.num)
+
+%std0.5.num  <- rbind(P4P.std0.5.num, P35P.std0.5.num)
+
+%std1.0.num  <- rbind(P4P.std1.0.num, P35P.std1.0.num)
+
+%std1.5.num  <- rbind(P4P.std1.5.num, P35P.std1.5.num)
+%%end.rcode
+
+\section{Abstract}
+
+The goal of my work is to implement a good algorithm that solves the problem of localization of a camera and evaluation of its focal length. 
+Two algorithms were chosen to be considered: P3.5Pf by \cite{wu} and P4Pf with 3Q3 by \cite{kukelova}. 
+The algorithms were implemented on MATLAB and transformed using MATLAB Coder. 
+Then they wer evaluated on synthetic noise-free data and data with zero-mean Gaussian noise.
+The first algorithm showed good accuracy results but its speed results were only satisfactory, so the decision have been made to consider the second algorithm that could be faster.
+
+%The second algorithm was implemented up until the estimation of the focal length in MATLAB. 
+%The implementation showed comparable results with the first implementation in double-precision.
+%So the plan is to finish the 3Q3 implementation and compare the time and accuracy performance of the two algorithms in single-precision.
+
+
+\section{Problem definition}
+
+Perspective-n-Point (PnP) is a problem where $n$ correspondencies between image points and points in space are given to evaluate unknown camera parameters. 
+In our case these parameters are rotation $\hat{R}$, translation $\hat{T}$ and a focal distance $\hat{f}$ (in terms of a classic pin-hole model). Minimal number of correspondancies that are needed to solve our problem is equal to 3.5, where one half of a point means that only one of the coordinates from the correspondace needs to be used to find solutions.
+
+
+\section{Algorithm overview}
+\subsection{P3.5Pf}
+The main intrest of the paper \cite{wu} is that the algorithm uses a minimal number of point coerrespondencies, which is 3.5, while a typical solver uses 4. The extra coordinate is used in the end to filter candidate solutions by checking the reprojection error. Such filtration almost always provides one solution on good data and zero solutions for outliers which considerably fastens RANSAC application.
+
+%By changing classic parametrization and by eliminating variables the author finds themself with %a system of 4 degree 6 polynomials with 2 unknowns that they solved by using standard Gr\"{o}%bner basis.
+
+%In this paper the author rejected the usual parametrization of a camera matrix $P = KR[I|-C]$  %and replaced it with another one, thus removing extra trivial solutions and solutions with the %same projection matrix, but negated focal length and $180^{\circ}$ translation around $z$-axis.
+%They then parametrized matrix R using quaternions and got a problem with $7$ unknowns to solve. 
+%After variable elimination they found themselves with a system of 4 degree 6 polynomials with 2 unknowns that they solved by using standard Gr\"{o}bner basis.
+%The candidate solutions are then filtered by 
+
+    %The implemented algorithm provides estimates for camera pose $\hat{R}$ and $\hat{C}$, as well as focal length $\hat{f}$.
+
+%\subsection{Implementation performance}
+    The general case of the algorithm was implemented in MATLAB. 
+The author describes different degenerate cases but states that these cases are highly unlikely, so considering the future usage of RANSAC, existance of such cases was ignored.
+The code was then transformed by MATLAB Coder and was evaluated on noise-free synthetic data and then on synthetic data with zero-mean Gaussian noise.
+
+    For noise-free case the following metrics were evaluated: \begin{itemize}
+        \item Relative accuracy of focal length estimation $\Delta_f=\frac{\left\lvert f - \hat{f}\right\rvert}{f}$
+        \item Relative accuracy of camera center translation estimation $\Delta_C = \frac{\left\lVert C - \hat{C}\right\rVert}{\left\lVert C\right\rVert}$
+        \item Accuracy of orientation estimation            as [normalized] Frobenius norm of the difference $\Delta_R = \frac{\left\lVert R - \hat{R}\right\rVert_F}{3}$
+        \item Execution time $t$
+    \end{itemize}
+The plots on noise-free data can be seen in \ref{fig:p35p}.
+
+\begin{figure}[h!]
+\begin{subfigure}[b]{0.475\textwidth}
+%%begin.rcode message=F, warning=F, echo=F, fig.height=1.2, fig.width=3
+%ggplot(dF.comp.p3.5p, aes(dF, fill = precision)) + geom_density(alpha = 0.2) + scale_x_log10() + xlab("focus")
+%%end.rcode
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.475\textwidth}
+%%begin.rcode message=F, warning=F, echo=F, fig.height=1.2, fig.width=3
+%ggplot(dR.comp.p3.5p, aes(dR, fill = precision)) + geom_density(alpha = 0.2) + scale_x_log10() + xlab("rotation")
+%%end.rcode
+\end{subfigure}
+\vskip\baselineskip
+\begin{subfigure}[b]{0.475\textwidth}
+%%begin.rcode message=F, warning=F, echo=F, fig.height=1.2, fig.width=3
+%ggplot(dC.comp.p3.5p, aes(dC, fill = precision)) + geom_density(alpha = 0.2) + scale_x_log10() + xlab("translation")
+%%end.rcode
+\end{subfigure}
+\quad
+\begin{subfigure}[b]{0.475\textwidth}
+%%begin.rcode message=F, warning=F, echo=F, fig.height=1.2, fig.width=3
+%ggplot(dt.comp.p3.5p, aes(dt, fill = precision)) + geom_density(alpha = 0.2) + scale_x_log10() + xlab("time") 
+%%end.rcode
+\end{subfigure}
+\caption{P3.5P on noise-free data in single- and double-precision}
+\label{fig:p35p}
+\end{figure}
+
+
+
+
+%For the time the mean was $\rinline{round(mean(data.double_clear$dt*1000),digits=2)}ms$ and $\rinline{round(mean(data.single_clear$dt*1000),digits=2)}ms$ and the median: $\rinline{round(median(data.double_clear$dt*1000),digits=2)}ms$ and \item  median $\rinline{round(median(data.single_clear$dt*1000),digits=2)}ms$ for double- and single-precision respectively. 
+
+Timings in different precision modes are pretty similar due to
+            \begin{itemize}
+                \item Lots of scalar code in elimination template preparation stage
+                \item Several conversions between double- and single-precision are still present in the generated C-code
+            \end{itemize}
+
+
+%The algorithm was also tested on a synthetic data with added Gaussian zero-mean noise. The implementation was compared in double- and single-precision. %As can be seen in \ref{fig:noisy}.
+
+The plots for data with Gaussian noise are presented below together with the results of P4Pf 
+
+
+%\subsection{Summary}
+Overall, the implemented algorithm exhibits reasonable accuracy but could have shown better speed.
+
+\section{P4Pf}
+
+The next algorithm is by \cite{kukelova}. The authors suggest an efficient way of solving a system of 3 quadric equations in 3 unknowns (3Q3 problem) and reduce P4Pf problem to 3Q3 problem.
+
+The general case of the algorithm was implemented in MATLAB. The authors of the article provide different solutions for occurring degeneracies but they were yet ignored in the current implementation and are not reflected in the following evaluations.
+
+%The performance of the 3Q3 algorithm implementation was evaluated on generated data in double precision. In figure \ref{fig:3q3} is an evaluation of relative accuracy $\Delta_X = \frac{\min_{X\in S}\||X - X^*\|}{\|X^*\|}$, where $S\subset \mathbb{R}$ is a set of solutions returned by 3Q3 solver and $X^*$ is a solution for which the system of equations was generated:
+
+This algorithm was evaluated using the same metrics that were used for P3.5P. The comparison in double-precision can be seen in \ref{fig:comp_double}. The comparison was also made on synthetic data with Gaussian noise as can be seen in \ref{fig:noisy}
+
+\begin{figure}[h!]
+\begin{subfigure}[b]{0.475\textwidth}
+%%begin.rcode message=F, warning=F, echo=F, fig.height=1.2, fig.width=3
+%ggplot(dF.comp.double, aes(dF, fill = algorithm)) + geom_density(alpha = 0.2) + scale_x_log10() + xlab("focus")
+%%end.rcode
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.475\textwidth}
+%%begin.rcode message=F, warning=F, echo=F, fig.height=1.2, fig.width=3
+%ggplot(dR.comp.double, aes(dR, fill = algorithm)) + geom_density(alpha = 0.2) + scale_x_log10() + xlab("rotation")
+%%end.rcode
+\end{subfigure}
+\vskip\baselineskip
+\begin{subfigure}[b]{0.475\textwidth}
+%%begin.rcode message=F, warning=F, echo=F, fig.height=1.2, fig.width=3
+%ggplot(dC.comp.double, aes(dC, fill = algorithm)) + geom_density(alpha = 0.2) + scale_x_log10() + xlab("translation")
+%%end.rcode
+\end{subfigure}
+\quad
+\begin{subfigure}[b]{0.475\textwidth}
+%%begin.rcode message=F, warning=F, echo=F, fig.height=1.2, fig.width=3
+%ggplot(dt.comp.double, aes(dt, fill = algorithm)) + geom_density(alpha = 0.2) + scale_x_log10() + xlab("time") 
+%%end.rcode
+\end{subfigure}
+\caption{P3.5P and P4P on noise-free data in double-precision}
+\label{fig:comp_double}
+\end{figure}
+
 \begin{figure}[h!]
 \begin{subfigure}[b]{0.475\textwidth}
 %%begin.rcode message=F, warning=F, echo=F, fig.height=1.2, fig.width=3
@@ -485,17 +480,16 @@ The general case of the algorithm was implemented in MATLAB. The authors of the 
 %ggplot(std1.5.single, aes(std1.5, fill = algorithm)) + geom_density(alpha = 0.2) + scale_x_log10() + xlab("std1.5") 
 %%end.rcode
 \end{subfigure}
-\caption{P3.5P and P4P on noisy data in single-precision}
+\caption{P3.5P and P4P on noisy data in double-precision}
 \label{fig:noisy}
 \end{figure}
 
-%\subsection{Summary}
+Unfortunately the algorithm in single-precision does not seem to be working correctly. It is to be yet understood whether the problem is in initial implementation, transformation using MATLAB Coder or maybe the algorithm itself. Even so since the P4P algorithm outperforms P3.5P by time, P4P looks more promisimg.
 
-To sum up this algorithm provides similar accuracy and there is hope that it could work faster than P3.5P if the number of solutions would not be big.
 
 \section{Conclusion}
 
-During this month P3.5P algorithm was implemented on MATLAB and using MATLAB Coder was evaluated on accuracy and speed in single- and double-precision. P4P was started to be implemented in hopes of getting a better speed. Two algorithms were compared on focal distance evaluation in double-precision. The plan is two finish the implementation of P4P, compare the two algorithms and choose the one that fits best.
+During this month P3.5Pf and P4Pf algorithms were implemented on MATLAB and transformed using MATLAB Coder. P3.5P was evaluated on accuracy and speed in single- and double-precision on synthetic noise-free ans noisy data. P4P was compared with P3.5Pf; P4Pf showed better speed results and similar accuracy. The next step is to make P4P aplicable in single-precision and may be consider another algorithm.
 
 \printbibliography
 
