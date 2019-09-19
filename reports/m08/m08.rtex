@@ -21,6 +21,7 @@
 \usepackage{geometry}
 \usepackage{tikz}
 \usepackage{tkz-euclide}
+\usepackage{diagbox}
 \usetkzobj{all}
 \usetikzlibrary{arrows,positioning}
 \usetikzlibrary{shapes,snakes}
@@ -329,9 +330,9 @@
 
 The goal of my work is to implement a good algorithm that solves the problem of localization of a camera and evaluation of its focal length. 
 Two algorithms were chosen to be considered: P3.5Pf by \cite{wu} and P4Pf with 3Q3 by \cite{kukelova}. 
-The algorithms were implemented on MATLAB and transformed using MATLAB Coder. 
-Then they wer evaluated on synthetic noise-free data and data with zero-mean Gaussian noise.
-The first algorithm showed good accuracy results but its speed results were only satisfactory, so the decision have been made to consider the second algorithm that could be faster.
+The algorithms were implemented in MATLAB and transformed using MATLAB Coder. 
+Then they were evaluated on synthetic noise-free data and data with zero-mean Gaussian noise.
+The first algorithm showed good accuracy results, but its speed results were only satisfactory, so the decision has been made to consider another algorithm. The second algorithm had comparable accuracy and proved to be faster, but only in double-precision. It does not work in single-precision yet.
 
 %The second algorithm was implemented up until the estimation of the focal length in MATLAB. 
 %The implementation showed comparable results with the first implementation in double-precision.
@@ -340,13 +341,13 @@ The first algorithm showed good accuracy results but its speed results were only
 
 \section{Problem definition}
 
-Perspective-n-Point (PnP) is a problem where $n$ correspondencies between image points and points in space are given to evaluate unknown camera parameters. 
-In our case these parameters are rotation $\hat{R}$, translation $\hat{T}$ and a focal distance $\hat{f}$ (in terms of a classic pin-hole model). Minimal number of correspondancies that are needed to solve our problem is equal to 3.5, where one half of a point means that only one of the coordinates from the correspondace needs to be used to find solutions.
+Perspective-n-Point (PnP) is a problem where $n$ correspondences between image points and points in space are given to evaluate unknown camera parameters. 
+In our case, these parameters are the camera rotation $\hat{R}$, the camera center $\hat{C}$ and the focal distance $\hat{f}$ (in terms of a classic pin-hole model). Minimal number of correspondences that are needed to solve this problem is equal to 3.5, where one half of a point means that only one of the coordinates from the correspondence is needed to find solutions.
 
 
 \section{Algorithm overview}
 \subsection{P3.5Pf}
-The main intrest of the paper \cite{wu} is that the algorithm uses a minimal number of point coerrespondencies, which is 3.5, while a typical solver uses 4. The extra coordinate is used in the end to filter candidate solutions by checking the reprojection error. Such filtration almost always provides one solution on good data and zero solutions for outliers which considerably fastens RANSAC application.
+The main interest of the paper \cite{wu} is that the algorithm uses a minimal number of point correspondences, which is 3.5, while a typical solver uses 4. The extra coordinate is used in the end to filter candidate solutions by checking the reprojection error. Such filtration almost always provides one solution for good data and zero solutions for outliers which considerably fastens RANSAC application.
 
 %By changing classic parametrization and by eliminating variables the author finds themself with %a system of 4 degree 6 polynomials with 2 unknowns that they solved by using standard Gr\"{o}%bner basis.
 
@@ -359,10 +360,10 @@ The main intrest of the paper \cite{wu} is that the algorithm uses a minimal num
 
 %\subsection{Implementation performance}
     The general case of the algorithm was implemented in MATLAB. 
-The author describes different degenerate cases but states that these cases are highly unlikely, so considering the future usage of RANSAC, existance of such cases was ignored.
+The author describes different degenerate cases, but states that these cases are highly unlikely, so considering the future usage of RANSAC, the existence of such cases was ignored.
 The code was then transformed by MATLAB Coder and was evaluated on noise-free synthetic data and then on synthetic data with zero-mean Gaussian noise.
 
-    For noise-free case the following metrics were evaluated: \begin{itemize}
+    In this report following metrics were evaluated: \begin{itemize}
         \item Relative accuracy of focal length estimation $\Delta_f=\frac{\left\lvert f - \hat{f}\right\rvert}{f}$
         \item Relative accuracy of camera center translation estimation $\Delta_C = \frac{\left\lVert C - \hat{C}\right\rVert}{\left\lVert C\right\rVert}$
         \item Accuracy of orientation estimation            as [normalized] Frobenius norm of the difference $\Delta_R = \frac{\left\lVert R - \hat{R}\right\rVert_F}{3}$
@@ -416,11 +417,11 @@ The plots for data with Gaussian noise are presented below together with the res
 
 
 %\subsection{Summary}
-Overall, the implemented algorithm exhibits reasonable accuracy but could have shown better speed.
+Overall, the implemented algorithm exhibits reasonable accuracy, but could have shown better speed.
 
 \section{P4Pf}
 
-The next algorithm is by \cite{kukelova}. The authors suggest an efficient way of solving a system of 3 quadric equations in 3 unknowns (3Q3 problem) and reduce P4Pf problem to 3Q3 problem.
+The next algorithm is by \cite{kukelova}. The authors suggest an efficient way of solving a system of 3 quadrics in 3 unknowns (3Q3 problem) and reduce the P4Pf problem to 3Q3 problem.
 
 The general case of the algorithm was implemented in MATLAB. The authors of the article provide different solutions for occurring degeneracies but they were yet ignored in the current implementation and are not reflected in the following evaluations.
 
@@ -484,12 +485,63 @@ This algorithm was evaluated using the same metrics that were used for P3.5P. Th
 \label{fig:noisy}
 \end{figure}
 
-Unfortunately the algorithm in single-precision does not seem to be working correctly. It is to be yet understood whether the problem is in initial implementation, transformation using MATLAB Coder or maybe the algorithm itself. Even so since the P4P algorithm outperforms P3.5P by time, P4P looks more promisimg.
+Unfortunately the algorithm in single-precision does not seem to be working correctly. It is yet to be understood whether the problem is in initial implementation or the algorithm itself. Even so since the P4P algorithm outperforms P3.5P by time and there is still hope of getting it fixed, P4P looks promising.
 
+
+\section{Parameter evaluation comparison}
+In this section there are presented quantiles of relative errors of evaluated parameters: the focal distance, the rotation and the camera center.
+\begin{table}[h!]
+\label{tab:p35p_double}
+    \begin{center}
+	\begin{tabular}{|l|rrr|}
+	\hline
+	\backslashbox{parameters}{quantiles} & 0.5 & 0.95 & 0.98\\
+	\hline
+	focal distance & \rinline{quantile(data.P35P.double$dF, probs = c(0.5))} & \rinline{quantile(data.P35P.double$dF, probs = c(0.95))}  & \rinline{quantile(data.P35P.double$dF, probs = c(0.98))} \\
+	rotation & \rinline{quantile(data.P35P.double$dR, probs = c(0.5))} & \rinline{quantile(data.P35P.double$dR, probs = c(0.95))}  & \rinline{quantile(data.P35P.double$dR, probs = c(0.98))} \\
+	center & \rinline{quantile(data.P35P.double$dC, probs = c(0.5))} & \rinline{quantile(data.P35P.double$dC, probs = c(0.95))}  & \rinline{quantile(data.P35P.double$dC, probs = c(0.98))} \\
+	\hline
+	\end{tabular}
+    \end{center}
+\caption{P3.5P, double-precision} 
+\end{table}
+
+
+\begin{table}[h!]
+\label{tab:p35p_single}
+    \begin{center}
+	\begin{tabular}{|l|rrr|}
+	\hline
+	\backslashbox{parameters}{quantiles}& 0.5 & 0.95 & 0.98\\
+	\hline
+	focal distance & \rinline{quantile(data.P35P.single$dF, probs = c(0.5))} & \rinline{quantile(data.P35P.single$dF, probs = c(0.95))}  & \rinline{quantile(data.P35P.single$dF, probs = c(0.98))} \\
+	rotation & \rinline{quantile(data.P35P.single$dR, probs = c(0.5))} & \rinline{quantile(data.P35P.single$dR, probs = c(0.95))}  & \rinline{quantile(data.P35P.single$dR, probs = c(0.98))} \\
+	center & \rinline{quantile(data.P35P.single$dC, probs = c(0.5))} & \rinline{quantile(data.P35P.single$dC, probs = c(0.95))}  & \rinline{quantile(data.P35P.single$dC, probs = c(0.98))} \\
+	\hline
+	\end{tabular}
+    \end{center}
+\caption{P3.5P, single-precision} 
+\end{table}
+
+\begin{table}[h!]
+\label{tab:p4p_double}
+    \begin{center}
+	\begin{tabular}{|l|rrr|}
+	\hline
+	\backslashbox{parameters}{quantiles} & 0.5 & 0.95 & 0.98\\
+	\hline
+	focal distance & \rinline{quantile(data.P4P.double$dF, probs = c(0.5))} & \rinline{quantile(data.P4P.double$dF, probs = c(0.95))}  & \rinline{quantile(data.P4P.double$dF, probs = c(0.98))} \\
+	rotation & \rinline{quantile(data.P4P.double$dR, probs = c(0.5))} & \rinline{quantile(data.P4P.double$dR, probs = c(0.95))}  & \rinline{quantile(data.P4P.double$dR, probs = c(0.98))} \\
+	center & \rinline{quantile(data.P4P.double$dC, probs = c(0.5))} & \rinline{quantile(data.P4P.double$dC, probs = c(0.95))}  & \rinline{quantile(data.P4P.double$dC, probs = c(0.98))} \\
+	\hline
+	\end{tabular}
+    \end{center}
+\caption{P4P, double-precision} 
+\end{table}
 
 \section{Conclusion}
 
-During this month P3.5Pf and P4Pf algorithms were implemented on MATLAB and transformed using MATLAB Coder. P3.5P was evaluated on accuracy and speed in single- and double-precision on synthetic noise-free ans noisy data. P4P was compared with P3.5Pf; P4Pf showed better speed results and similar accuracy. The next step is to make P4P aplicable in single-precision and may be consider another algorithm.
+During this month P3.5Pf and P4Pf algorithms were implemented in MATLAB and transformed using MATLAB Coder. P3.5P was evaluated on accuracy and speed in single- and double-precision on synthetic noise-free and noisy data. P4P was compared with P3.5Pf; P4Pf showed better speed results and similar accuracy. The next step is to make P4P aplicable in single-precision and may be consider another algorithm.
 
 \printbibliography
 
