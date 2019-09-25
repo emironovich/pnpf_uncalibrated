@@ -2,13 +2,28 @@ function [n, xs, ys, zs] = solve_3Q3(c, e) %c -- 3x10 coefficients matrix
 %SOLVE_3Q3 Summary of this function goes here
 %   Detailed explanation goes here
     A = find_A(c);
+    if abs(det(A)) < e
+	n = 0;
+	xs = [];
+	ys = [];
+	zs = [];
+	return;
+    end
     P = find_P(c);
     P_prime = zeros(3, 3, 3, 'like', c);
     for i = 1 : 3
         P_prime(:, :, i) = A\P(:, :, i);
     end
-    M = find_M(P_prime);
+    M = find_M(single(P_prime));
     pol = find_det_M(M);
+    if ~isfinite(pol)
+	n = 0;
+        xs = [];
+        ys = [];
+        zs = [];
+        return;
+
+    end
     xs_complex = roots(pol');
     xs = zeros(1, length(xs_complex), 'like', c);
     n = 0;

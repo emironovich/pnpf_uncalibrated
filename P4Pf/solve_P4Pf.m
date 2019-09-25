@@ -7,7 +7,7 @@ function [solution_num, fs, Rs, Ts] = solve_P4Pf(X, u, v, e)
     A = find_A(X, u, v);
     [Q, ~] = qr(A');
     N = Q(:, 5:end); %nullspace
-    D = find_D(X, u, v, N, e);
+    D = find_D(double(X), u, v, N, e);
     eqs = find_eqs([N; D]); 
     [n, xs, ys, zs] = solve_3Q3(eqs(1:3, :), e); %we may choes another 3 out of 4 eq-s
     fs = zeros(1, 0, 'like', X);
@@ -37,9 +37,10 @@ function [solution_num, fs, Rs, Ts] = solve_P4Pf(X, u, v, e)
         if det(R) < 0
             R = -R;         
         end
-        T = find_T(X(1:3, :), u, v, R, w);
-        
-        P = diag([1, 1, w])*[R, T];
+        T = find_T(double(X(1:3, :)), double(u), double(v), double(R), double(w));
+%	 T = find_T((X(1:3, :)), (u),(v),(R),(w));
+        T = single(T);
+	P = diag([1, 1, w])*[R, T];
         U_eval = P*X;
         U_eval = bsxfun(@rdivide, U_eval, U_eval(3, :));
         %reprojection error check
@@ -81,4 +82,5 @@ function D = find_D(X, u, v, ns, e)
         end
     end
     D = B\C;
+    D = single(D);
 end
