@@ -489,53 +489,104 @@ Unfortunately the algorithm in single-precision does not seem to be working corr
 
 
 \section{Parameter evaluation comparison}
-In this section there are presented quantiles of relative errors of evaluated parameters: the focal distance, the rotation and the camera center.
+In this section relative errors of evaluated parameters are considered: the focal distance, the rotation and the camera center. In the table below there are 0.5-quantile, 0.95-quantile, 0.98-quantile, arithmetic mean and cumulative distribution function at 0.1.
 \begin{table}[h!]
 \label{tab:p35p_double}
-    \begin{center}
-	\begin{tabular}{|l|rrr|}
-	\hline
-	\backslashbox{parameters}{quantiles} & 0.5 & 0.95 & 0.98\\
-	\hline
-	focal distance & \rinline{quantile(data.P35P.double$dF, probs = c(0.5))} & \rinline{quantile(data.P35P.double$dF, probs = c(0.95))}  & \rinline{quantile(data.P35P.double$dF, probs = c(0.98))} \\
-	rotation & \rinline{quantile(data.P35P.double$dR, probs = c(0.5))} & \rinline{quantile(data.P35P.double$dR, probs = c(0.95))}  & \rinline{quantile(data.P35P.double$dR, probs = c(0.98))} \\
-	center & \rinline{quantile(data.P35P.double$dC, probs = c(0.5))} & \rinline{quantile(data.P35P.double$dC, probs = c(0.95))}  & \rinline{quantile(data.P35P.double$dC, probs = c(0.98))} \\
-	\hline
-	\end{tabular}
-    \end{center}
+\begin{center}
+\begin{tabular}{|l||r|r|r|r|r|}
+\hline
+\backslashbox{parameters}{evaluations} & 0.5-q. & 0.95-q. & 0.98-q. & mean & cdf(0.1)\\
+\hline
+focal distance & \rinline{format(quantile(data.P35P.double$dF, probs = c(0.5)), digits = 4)} & 
+  \rinline{format(quantile(data.P35P.double$dF, probs = c(0.95)), digits = 4)}  & 
+  \rinline{format(quantile(data.P35P.double$dF, probs = c(0.98)), digits = 4)} & 
+  \rinline{format(mean(data.P35P.double$dF), digits = 4)} & 
+  \rinline{format(ecdf(data.P35P.double$dF)(0.1), digits = 4)}\\
+
+rotation & 
+  \rinline{format(quantile(data.P35P.double$dR, probs = c(0.5)), digits = 4)} & 
+  \rinline{format(quantile(data.P35P.double$dR, probs = c(0.95)), digits = 4)}  & 
+  \rinline{format(quantile(data.P35P.double$dR, probs = c(0.98)), digits = 4)} & 
+  \rinline{format(mean(data.P35P.double$dR), digits = 4)} & 
+  \rinline{format(ecdf(data.P35P.double$dR)(0.1), digits = 4)} \\
+
+
+center & 
+  \rinline{format(quantile(data.P35P.double$dC, probs = c(0.5)), digits = 4)} & 
+  \rinline{format(quantile(data.P35P.double$dC, probs = c(0.95)), digits = 4)}  & 
+  \rinline{format(quantile(data.P35P.double$dC, probs = c(0.98)), digits = 4)}  & 
+  \rinline{format(mean(data.P35P.double$dC), digits = 4)} & 
+  \rinline{format(ecdf(data.P35P.double$dC)(0.1), digits = 4)}\\
+\hline
+\end{tabular}
+\end{center}
 \caption{P3.5P, double-precision} 
 \end{table}
 
 
 \begin{table}[h!]
 \label{tab:p35p_single}
-    \begin{center}
-	\begin{tabular}{|l|rrr|}
-	\hline
-	\backslashbox{parameters}{quantiles}& 0.5 & 0.95 & 0.98\\
-	\hline
-	focal distance & \rinline{quantile(data.P35P.single$dF, probs = c(0.5))} & \rinline{quantile(data.P35P.single$dF, probs = c(0.95))}  & \rinline{quantile(data.P35P.single$dF, probs = c(0.98))} \\
-	rotation & \rinline{quantile(data.P35P.single$dR, probs = c(0.5))} & \rinline{quantile(data.P35P.single$dR, probs = c(0.95))}  & \rinline{quantile(data.P35P.single$dR, probs = c(0.98))} \\
-	center & \rinline{quantile(data.P35P.single$dC, probs = c(0.5))} & \rinline{quantile(data.P35P.single$dC, probs = c(0.95))}  & \rinline{quantile(data.P35P.single$dC, probs = c(0.98))} \\
-	\hline
-	\end{tabular}
-    \end{center}
+\begin{center}
+\begin{tabular}{|l||r|r|r|r|r|}
+\hline
+\backslashbox{parameters}{evaluations}& 0.5-q. & 0.95-q. & 0.98-q.  & mean & cdf(0.1)\\
+\hline
+focal distance & 
+  \rinline{format(quantile(data.P35P.single$dF, probs = c(0.5)), digits = 4)} &
+  \rinline{format(quantile(data.P35P.single$dF, probs = c(0.95)), digits = 4)}  & 
+  \rinline{format(quantile(data.P35P.single$dF, probs = c(0.98)), digits = 4)}  & 
+  \rinline{format(mean(data.P35P.single$dF), digits = 4)} & 
+  \rinline{format(ecdf(data.P35P.single$dF)(0.1), digits = 4)}\\
+
+rotation & 
+  \rinline{format(quantile(data.P35P.single$dR, probs = c(0.5)), digits = 4)} & 
+  \rinline{format(quantile(data.P35P.single$dR, probs = c(0.95)), digits = 4)}  & 
+  \rinline{format(quantile(data.P35P.single$dR, probs = c(0.98)), digits = 4)}   & 
+  \rinline{format(mean(data.P35P.single$dR), digits = 4)} & 
+  \rinline{format(ecdf(data.P35P.single$dR)(0.1), digits = 4)}\\
+
+center & 
+  \rinline{format(quantile(data.P35P.single$dC, probs = c(0.5)), digits = 4)} & 
+  \rinline{format(quantile(data.P35P.single$dC, probs = c(0.95)), digits = 4)}  & 
+  \rinline{format(quantile(data.P35P.single$dC, probs = c(0.98)), digits = 4)}   &
+  \rinline{format(mean(data.P35P.single$dC), digits = 4)} & 
+  \rinline{format(ecdf(data.P35P.single$dC)(0.1), digits = 4)}\\
+\hline
+\end{tabular}
+\end{center}
 \caption{P3.5P, single-precision} 
 \end{table}
 
 \begin{table}[h!]
 \label{tab:p4p_double}
-    \begin{center}
-	\begin{tabular}{|l|rrr|}
-	\hline
-	\backslashbox{parameters}{quantiles} & 0.5 & 0.95 & 0.98\\
-	\hline
-	focal distance & \rinline{quantile(data.P4P.double$dF, probs = c(0.5))} & \rinline{quantile(data.P4P.double$dF, probs = c(0.95))}  & \rinline{quantile(data.P4P.double$dF, probs = c(0.98))} \\
-	rotation & \rinline{quantile(data.P4P.double$dR, probs = c(0.5))} & \rinline{quantile(data.P4P.double$dR, probs = c(0.95))}  & \rinline{quantile(data.P4P.double$dR, probs = c(0.98))} \\
-	center & \rinline{quantile(data.P4P.double$dC, probs = c(0.5))} & \rinline{quantile(data.P4P.double$dC, probs = c(0.95))}  & \rinline{quantile(data.P4P.double$dC, probs = c(0.98))} \\
-	\hline
-	\end{tabular}
-    \end{center}
+\begin{center}
+\begin{tabular}{|l||r|r|r|r|r|}
+\hline
+\backslashbox{parameters}{evaluations} & 0.5-q. & 0.95-q. & 0.98-q. & mean & cdf(0.1)\\
+\hline
+focal distance & 
+  \rinline{format(quantile(data.P4P.double$dF, probs = c(0.5)), digits = 4)} &
+  \rinline{format(quantile(data.P4P.double$dF, probs = c(0.95)), digits = 4)}  & 
+  \rinline{format(quantile(data.P4P.double$dF, probs = c(0.98)), digits = 4)} & 
+  \rinline{format(mean(data.P4P.double$dF), digits = 4)} & 
+  \rinline{format(ecdf(data.P4P.double$dF)(0.1), digits = 4)}\\
+
+rotation & 
+  \rinline{format(quantile(data.P4P.double$dR, probs = c(0.5)), digits = 4)} & 
+  \rinline{format(quantile(data.P4P.double$dR, probs = c(0.95)), digits = 4)}  & 
+  \rinline{format(quantile(data.P4P.double$dR, probs = c(0.98)), digits = 4)} & 
+  \rinline{format(mean(data.P4P.double$dR), digits = 4)} & 
+  \rinline{format(ecdf(data.P4P.double$dR)(0.1), digits = 4)} \\
+
+center & 
+  \rinline{format(quantile(data.P4P.double$dC, probs = c(0.5)), digits = 4)} & 
+  \rinline{format(quantile(data.P4P.double$dC, probs = c(0.95)), digits = 4)}  & 
+  \rinline{format(quantile(data.P4P.double$dC, probs = c(0.98)), digits = 4)} & 
+  \rinline{format(mean(data.P4P.double$dC), digits = 4)} & 
+  \rinline{format(ecdf(data.P4P.double$dC)(0.1), digits = 4)}\\
+\hline
+\end{tabular}
+\end{center}
 \caption{P4P, double-precision} 
 \end{table}
 
