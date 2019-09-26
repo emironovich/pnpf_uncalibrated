@@ -55,6 +55,7 @@
 %data.P35P.noisy <- read.csv('./stats/stats_p35p_noisy.csv')
 %data.P4P.num <- read.csv('./stats/sol_numstats_p4p_noisy.csv')
 %data.P35P.num <- read.csv('./stats/sol_numstats_p35p_noisy.csv')
+%data.P4P.mixed <-read.csv('./stats/stats_p4p_mixed.csv')
 % N <- 1e6
 %% end.rcode
 
@@ -485,7 +486,7 @@ This algorithm was evaluated using the same metrics that were used for P3.5P. Th
 \label{fig:noisy}
 \end{figure}
 
-Unfortunately the algorithm in single-precision does not seem to be working correctly. It is yet to be understood whether the problem is in initial implementation or the algorithm itself. Even so since the P4P algorithm outperforms P3.5P by time and there is still hope of getting it fixed, P4P looks promising.
+Unfortunately the algorithm in single-precision does not seem to be working correctly. So the decision has been made to expand the types to double-precision in several places. This algorithm was not transformed using MATLAB Coder. Performance results for P4Pf in mixed-precision can be seen in the table \ref{tab:p4p_mixed} below. The algorithm returns zero decisions in 13\% cases, this is not reflected in the following evaluations.
 
 
 \section{Parameter evaluation comparison}
@@ -588,6 +589,39 @@ center &
 \end{tabular}
 \end{center}
 \caption{P4P, double-precision} 
+\end{table}
+
+\begin{table}[h!]
+\begin{center}
+\begin{tabular}{|l||r|r|r|r|r|}
+\hline
+\backslashbox{parameters}{evaluations} & 0.5-q. & 0.95-q. & 0.98-q. & mean & cdf(0.1)\\
+\hline
+focal distance & 
+  \rinline{format(quantile(data.P4P.mixed$dF, probs = c(0.5)), digits = 4)} &
+  \rinline{format(quantile(data.P4P.mixed$dF, probs = c(0.95)), digits = 4)}  & 
+  \rinline{format(quantile(data.P4P.mixed$dF, probs = c(0.98)), digits = 4)} & 
+  \rinline{format(mean(data.P4P.mixed$dF), digits = 4)} & 
+  \rinline{format(ecdf(data.P4P.mixed$dF)(0.1), digits = 4)}\\
+
+rotation & 
+  \rinline{format(quantile(data.P4P.mixed$dR, probs = c(0.5)), digits = 4)} & 
+  \rinline{format(quantile(data.P4P.mixed$dR, probs = c(0.95)), digits = 4)}  & 
+  \rinline{format(quantile(data.P4P.mixed$dR, probs = c(0.98)), digits = 4)} & 
+  \rinline{format(mean(data.P4P.mixed$dR), digits = 4)} & 
+  \rinline{format(ecdf(data.P4P.mixed$dR)(0.1), digits = 4)} \\
+
+center & 
+  \rinline{format(quantile(data.P4P.mixed$dC, probs = c(0.5)), digits = 4)} & 
+  \rinline{format(quantile(data.P4P.mixed$dC, probs = c(0.95)), digits = 4)}  & 
+  \rinline{format(quantile(data.P4P.mixed$dC, probs = c(0.98)), digits = 4)} & 
+  \rinline{format(mean(data.P4P.mixed$dC), digits = 4)} & 
+  \rinline{format(ecdf(data.P4P.mixed$dC)(0.1), digits = 4)}\\
+\hline
+\end{tabular}
+\end{center}
+\label{tab:p4p_mixed}
+\caption{P4P, mixed-precision} 
 \end{table}
 
 \section{Conclusion}
