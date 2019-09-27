@@ -626,7 +626,11 @@ center &
 
 \section{Conclusion}
 
-During this month P3.5Pf and P4Pf algorithms were implemented in MATLAB and transformed using MATLAB Coder. P3.5P was evaluated on accuracy and speed in single- and double-precision on synthetic noise-free and noisy data. P4P was compared with P3.5Pf; P4Pf showed better speed results and similar accuracy. The next step is to make P4P aplicable in single-precision and may be consider another algorithm.
+During this month P3.5Pf and P4Pf algorithms were implemented in MATLAB and transformed using MATLAB Coder. 
+P3.5P was evaluated on accuracy and speed in single- and double-precision on synthetic noise-free and noisy data. 
+P4Pf was compared with P3.5Pf; 
+P4Pf showed better speed results and similar accuracy in double-precision, but did not work correctly in single-precision.
+The next step is to compare the speed of P4P in mixed-precision and the speed of P3.5P in single-precision, and maybe consider another algorithm.
 
 \printbibliography
 
