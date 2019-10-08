@@ -42,7 +42,11 @@ function [solution_num, fs, Rs, Ts] = solve_P4Pf(X, u, v, e)
         T = single(T);
 	P = diag([1, 1, w])*[R, T];
         U_eval = P*X;
-        U_eval = bsxfun(@rdivide, U_eval, U_eval(3, :));
+        for j = 1 : 4
+            U_eval(:, j) = U_eval(:, j) ./U_eval(3, j);
+        end
+        %U_eval = U_eval ./ U_eval(3, :);
+        %U_eval = bsxfun(@rdivide, U_eval, U_eval(3, :));
         %reprojection error check
         if norm(U_eval(1:2, :) - [u;v]) < 0.01/w
             solution_num = solution_num + 1;
