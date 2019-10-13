@@ -56,5 +56,5 @@ function stats = solver_on_gen_with_noise(N, eps, solver_handle, csv_filename)
         stats(:, 2*d + 1) = curr_stats;
     end
     headers = 'std0.0,std0.5,std1.0,std1.5,std2.0,std2.5,std3.0,std3.5,std4.0,std4.5,std5.0';
-    write_to_cvs(csv_filename, stats, headers);
+    write_to_csv(csv_filename, stats, headers);
 end

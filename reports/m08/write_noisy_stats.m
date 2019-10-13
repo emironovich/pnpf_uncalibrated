@@ -35,5 +35,5 @@ function write_noisy_stats(N, eps, solver, filename)
         stats = stats(:, valid);
         %stats_median(:, 2*d s+ 1) = [median(stats, 2); zero_solutions/N]; 
     end
-    write_to_cvs(filename, stats', "")
+    write_to_csv(filename, stats', "")
 end
