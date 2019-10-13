@@ -1,5 +1,5 @@
 function [fc, fs, n] = find_f(F, x, y, e)
-    F_eval = zeros(4, 3);
+    F_eval = zeros(4, 3, 'like', F);
     mons =  [x^2, x*y, y^2, x, y, 1];
     for i = 1 : 4
         for j = 1 : 3

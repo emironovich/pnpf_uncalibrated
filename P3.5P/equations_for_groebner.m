@@ -1,5 +1,5 @@
 function G = equations_for_groebner(F)
-    G = zeros(4, 1, 28);
+    G = zeros(4, 1, 28, 'like', F);
     G(1, 1, :) = find_det3(F(2:4, :, :)); 
     G(2, 1, :) = find_det3([F(1, :, :); F(3:4, :, :)]);
     G(3, 1, :) = find_det3([F(1:2, :, :); F(4, :, :)]);

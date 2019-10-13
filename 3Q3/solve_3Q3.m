@@ -1,38 +1,42 @@
 function [n, xs, ys, zs] = solve_3Q3(c, e) %c -- 3x10 coefficients matrix
 %SOLVE_3Q3 Summary of this function goes here
 %   Detailed explanation goes here
+    xs = zeros(1, 0, 'like', c);
+    coder.varsize('xs', [1 13], [0 1]);
+    ys = zeros(1, 0, 'like', c);
+    coder.varsize('ys', [1 13], [0 1]);
+    zs = zeros(1, 0, 'like', c);
+    coder.varsize('zs', [1 13], [0 1]);
+
     A = find_A(c);
-    if abs(det(A)) < e
-	n = 0;
-	xs = [];
-	ys = [];
-	zs = [];
-	return;
+    if rcond(A) < eps
+         n = 0;
+         return;
     end
     P = find_P(c);
     P_prime = zeros(3, 3, 3, 'like', c);
     for i = 1 : 3
         P_prime(:, :, i) = A\P(:, :, i);
     end
-    M = find_M(single(P_prime));
+    M = find_M(P_prime);
     pol = find_det_M(M);
+    assert(numel(pol)==9);
     if ~isfinite(pol)
-	n = 0;
-        xs = [];
-        ys = [];
-        zs = [];
+        n = 0;
         return;
-
     end
+
     xs_complex = roots(pol');
     xs = zeros(1, length(xs_complex), 'like', c);
     n = 0;
+
     for i = 1 : length(xs_complex)
         if abs(imag(xs_complex(i))) < e
             n = n + 1;
             xs(n) = real(xs_complex(i));
         end
     end
+
     xs = xs(1:n);
     ys = zeros(1, n, 'like', c);
     zs = zeros(1, n, 'like', c);
@@ -57,9 +61,11 @@ function P = find_P(c)
 end
 
 function d = find_det_M(M)
-    d = conv(M(:, 1, 1), find_det2(M(:, 2:3, 2:3))) - ...
-        conv(M(:, 1, 2), find_det2(cat(3, M(:, 2:3, 1), M(:, 2:3, 3)))) + ...
-        conv(M(:, 1, 3), find_det2(M(:, 2:3, 1:2)));
+    d_ = conv(M(:, 1, 1), find_det2(M(:, 2:3, 2:3))) - ...
+         conv(M(:, 1, 2), find_det2(cat(3, M(:, 2:3, 1), M(:, 2:3, 3)))) + ...
+         conv(M(:, 1, 3), find_det2(M(:, 2:3, 1:2)));
+    % Due to the structure of M, d is 8-degree polynomial
+    d = d_(end-8:end);
 end
 
 function d = find_det2(M)

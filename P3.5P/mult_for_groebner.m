@@ -1,5 +1,5 @@
 function G20 = mult_for_groebner(G4)
-    G20 = zeros(20, 45);
+    G20 = zeros(20, 45, 'like', G4);
     
     %multiply by qx^2
     for i = 1 : 4

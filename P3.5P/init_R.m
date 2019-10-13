@@ -1,5 +1,5 @@
-function R = init_R()
-    R = zeros(3,3,6); %3x3 matrix with 2 degree polynomials in qx>qy
+function R = init_R(dtype)
+    R = zeros(3,3,6, dtype); %3x3 matrix with 2 degree polynomials in qx>qy
     %coefficients are listed in grevlex order: 1)qx^2, 2)qxqy, 3)qy^2, 4)qx, 5)qy, 6)1
 
     %1 + qx^2 - qy^2

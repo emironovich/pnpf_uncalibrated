@@ -3,7 +3,7 @@ function M = make_mult_matrix(C)
 %basis B
 %monomial basis B = {x^3, ...., 1} -- monomials up to the 3d degree, #B = 10
     %x^3, x^2*y, x*y^2, y^3, x^2, x*y, y^2, x, y, 1
-    M = zeros(10, 10);
+    M = zeros(10, 10, 'like', C);
     for i = 1 : 4
         M(:, i) = -C(15 + i, :)';
     end
