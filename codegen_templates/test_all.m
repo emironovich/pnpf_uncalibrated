@@ -23,8 +23,8 @@ pt_3d_single = single(pt_3d);
 pt_2d_double = pt_2d;
 pt_2d_single = single(pt_2d);
 
-eps_double = 1e-3;
-eps_single = single(1e-1);
+eps_double = eps('double');
+eps_single = eps('single');
 
 [n,fs,r,t] = p35p_double(pt_3d_double', pt_2d_double(:,1)', pt_2d_double(:,2)', eps_double);
 

@@ -31,10 +31,8 @@ function [n, xs, ys, zs] = solve_3Q3(c, e) %c -- 3x10 coefficients matrix
     n = 0;
 
     for i = 1 : length(xs_complex)
-        if abs(imag(xs_complex(i))) < e
-            n = n + 1;
-            xs(n) = real(xs_complex(i));
-        end
+        n = n + 1;
+        xs(n) = real(xs_complex(i));
     end
 
     xs = xs(1:n);

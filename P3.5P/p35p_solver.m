@@ -32,12 +32,8 @@ function [solution_num, f_sol, R_sol, T_sol] = p35p_solver(X, x, y, e)
         qx = D(i, i);
         qy = W(9, i) / W(10, i);
 
-        if abs(imag(qx)) > e || abs(imag(qy)) > e
-            continue;
-        else
-            qx = real(qx);
-            qy = real(qy);
-        end
+        qx = real(qx);
+        qy = real(qy);
         [fc_set, fs_set, f_num] = find_f(F, qx, qy, e);
 
         for j = 1 : f_num
