@@ -4,7 +4,7 @@ function [n,f,r,t] = p4pf_double(X, x, y, e)
     assert(isa(y, 'double'));
     assert(isa(e, 'double'));
     
-    [n, f, r, t] = solve_P4Pf(X, x, y, e);
+    [n, f, r, t] = p4p_solver(X, x, y, e);
     assert(isa(n, 'int32'));
     assert(isa(f, 'double'));
     assert(isa(r, 'double'));

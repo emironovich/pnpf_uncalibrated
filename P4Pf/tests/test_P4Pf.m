@@ -1,10 +1,10 @@
-%Testing solve_P4Pf()
+%Testing p4p_solver()
 
 [X, u, v, f, R, C, P] = generate_data();
 w = 1 / f;
 T = -R*C;
 e = 1e-8;
-[num, fs, Rs, Ts, A, N, D, eqs] = solve_P4Pf(X, u, v, 1e-4);
+[num, fs, Rs, Ts, A, N, D, eqs] = p4p_solver(X, u, v, 1e-4);
 
 X = [X; ones(1, 4)];
 %% Test 1: A

@@ -1,6 +1,6 @@
 [X, x, y, f_gen, R_gen, C_gen] = generate_data();
 start = tic;
-[solution_num, f_sol, R_sol, T_sol] = solve_P4Pf(X, x, y, 1e-04);
+[solution_num, f_sol, R_sol, T_sol] = p4p_solver(X, x, y, 1e-04);
 dt = toc(start);
 
 min_diff = inf;

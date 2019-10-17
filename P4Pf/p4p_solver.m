@@ -1,5 +1,5 @@
 function [solution_num, fs, Rs, Ts] = p4p_solver(X, u, v, e)
-%p4p_solver Summary of this function goes here
+
 %       X = [p1, p2, p3, p4], pi = [4, 1]; X(:, i) <-> (u(i), v(i))
 %       if f is a correct foal length, then [R, T] = [R, T] / sign(d)*abs(d)^(1/3);
 %       where d = det(R)
