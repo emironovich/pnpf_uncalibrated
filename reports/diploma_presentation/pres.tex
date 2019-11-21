@@ -1,0 +1,123 @@
+\documentclass[notheorems,aspectratio=169]{beamer}
+\usepackage{cmap}
+\usepackage[T2A]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{mathtext}
+\usepackage[english,russian]{babel}
+\usepackage{commath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{mathtools}
+\usepackage{indentfirst}
+\usepackage{geometry}
+\usepackage{tikz}
+\usepackage{tkz-euclide}
+\usetkzobj{all}
+\usetikzlibrary{arrows,positioning}
+\usetikzlibrary{shapes,snakes}
+\usetikzlibrary{shapes.multipart}
+\usepackage{graphicx}
+\usepackage{epstopdf}
+\usepackage{subcaption}
+\usepackage{caption}
+\usepackage{hyperref}
+\usepackage{setspace}
+\usepackage{float}
+\usepackage{tcolorbox}
+\usepackage{totcount}
+\usepackage{xcntperchap}
+\captionsetup{justification=centering}
+\usepackage{pgfpages}
+%\pgfpagesuselayout{4 on 1}[a4paper,border shrink=5mm, landscape]
+\mode<presentation>
+{
+	\usetheme{Warsaw}
+	\usecolortheme{whale}
+	\setbeamercovered{transparent}
+	\useoutertheme{infolines}
+}
+
+\regtotcounter{section}
+\regtotcounter{subsection}
+\RegisterCounters{section}{subsection}
+
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{example}{Example}
+\newtheorem{definition}{Definition}
+\DeclarePairedDelimiter\ceil{\lceil}{\rceil}
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
+\setbeamercovered{invisible}
+\setbeamertemplate{navigation symbols}{}
+\usepackage{physics}
+
+\addtobeamertemplate{frametitle}{\setlength{\parindent}{0em}}{}
+\addtobeamertemplate{block begin}{\setlength{\parindent}{0em}}{\setlength{\parindent}{2em}}
+\addtobeamertemplate{block example begin}{\setlength{\parindent}{0em}}{\setlength{\parindent}{2em}}
+
+\makeatletter
+\setbeamertemplate{footline}
+{
+	\leavevmode%
+	\hbox{%
+		\begin{beamercolorbox}[wd=.5\paperwidth,ht=2.25ex,dp=1ex,center]{title in head/foot}%
+			\usebeamerfont{title in head/foot}\insertshorttitle
+		\end{beamercolorbox}%
+		\begin{beamercolorbox}[wd=.45\paperwidth,ht=2.25ex,dp=1ex,center]{author in head/foot}%
+			\usebeamerfont{author in head/foot}\insertshortauthor\beamer@ifempty{\insertshortinstitute}{}{, \insertshortinstitute}
+		\end{beamercolorbox}%
+		\begin{beamercolorbox}[wd=.05\paperwidth,ht=2.25ex,dp=1ex,right]{date in head/foot}%
+			\insertframenumber{} / \inserttotalframenumber\hspace*{2ex} 
+		\end{beamercolorbox}}%
+	\vskip0pt%
+}
+
+
+
+\makeatletter
+\title{Быстрая локализация изображений, получаемых некалиброванной камерой}
+\author{Елизавета Миронович}
+\institute[434 группа]{434 группа}
+\makeatletter
+\subject{\@title}
+\makeatother
+
+
+\begin{document}
+\begin{frame}
+  \maketitle
+  	\centering
+  \begin{tabular}[t]{rl}
+	  Руководитель: & Пименов~А.\,A.\\
+	  Консультант: & Корчемкин~Д.\,А.\\
+  \end{tabular}
+
+\end{frame}
+
+
+\begin{frame}{Цель работы}
+	\textbf{Задача}: Дано $n$ соответствий между точками в пространстве и на изображении, требуется определить расположение камеры относительно данного облака точек и оценить её фокусное расстояние.
+	
+	\bigskip
+	
+	\textbf{Цель}: Сравнить некоторые из существующих алгоритмов, решающих данную задачу и выбрать наилучший.
+
+\end{frame}
+
+\begin{frame}{Ожидаемые результаты}
+    \begin{itemize}
+        \item Реализация алгоритмов решающих выбранную задачу;
+        \item Интеграция в библиотеку colmap;
+        \item Сравнение производительности и точности выбранных алгоритмов;
+        \item Перенос алгоритма, признанного наилучшим, на gpgpu.
+    \end{itemize}
+
+\end{frame}
+
+\end{document}
+
+
+
+
