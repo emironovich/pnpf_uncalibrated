@@ -59,14 +59,16 @@ function P = find_P(c)
 end
 
 function d = find_det_M(M)
-    d_ = conv(M(:, 1, 1), find_det2(M(:, 2:3, 2:3))) - ...
-         conv(M(:, 1, 2), find_det2(cat(3, M(:, 2:3, 1), M(:, 2:3, 3)))) + ...
-         conv(M(:, 1, 3), find_det2(M(:, 2:3, 1:2)));
-    % Due to the structure of M, d is 8-degree polynomial
-    d = d_(end-8:end);
+    d = conv(M(2:5, 3, 1), find_det23(M(:, 1:2, 2:3))) - ...
+         conv(M(2:5, 3, 2), find_det23(cat(3, M(:, 1:2, 1), M(:, 1:2, 3)))) + ...
+         conv(M(:, 3, 3), find_det22(M(:, 1:2, 1:2))); 
 end
 
-function d = find_det2(M)
-    d = conv(M(:, 1, 1), M(:, 2, 2)) - conv(M(:, 1, 2), M(:, 2, 1));
+function d = find_det22(M)
+    d = conv(M(3:5, 1, 1), M(3:5, 2, 2)) - conv(M(3:5, 1, 2), M(3:5, 2, 1));
+end
+
+function d = find_det23(M)
+    d = conv(M(3:5, 1, 1), M(2:5, 2, 2)) - conv(M(2:5, 1, 2), M(3:5, 2, 1));
 end
 
