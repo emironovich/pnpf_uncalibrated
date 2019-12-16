@@ -42,14 +42,14 @@ function [f_diff, R_diff_half, T_diff_half] = cmp_solvers(cameras_gt, images_gt,
         
         for j = 1 : n
             R_diff(i, j) = norm((images_est(i).R)*(images_est(j).R)' - (images_gt(i).R)*(images_gt(j).R)', 'fro') / 3;
-            alphas(i, j) = mean(abs(images_est(i).t - images_est(j).t) ./ abs(images_gt(i).t - images_gt(j).t));
+            alphas(i, j) = norm(images_est(i).t - images_est(j).t) / norm(images_gt(i).t - images_gt(j).t);
         end
     end
     alpha = median(alphas, 'all', 'omitnan');
     
     for i = 1 : n
         for j = 1 : n
-            T_diff(i, j) = norm((images_est(i).t - images_est(j).t) - alpha*(images_gt(i).t - images_gt(j).t))/(alpha*norm(images_gt(i).t - images_gt(j).t));
+            T_diff(i, j) = (norm(images_est(i).t - images_est(j).t) - alpha*norm(images_gt(i).t - images_gt(j).t))/(alpha*norm(images_gt(i).t - images_gt(j).t));
         end
     end
     T_diff_half = zeros((n^2 - n)/2, 1);
