@@ -13,17 +13,20 @@
 
 
 function [R, t, alpha, resnorm_R, resnorm_t] = find_absolute_Rt(images_gt, images_eval)
-    assert(length(images_gt) == length(images_eval));
-    n = length(images_gt);
+%     assert(length(images_gt) == length(images_eval));
+    n = length(images_eval);
     R_gt = zeros(3,3,n);
     R_eval = zeros(3,3,n);
     t_gt = zeros(3,n);
     t_eval = zeros(3,n);
-    for i = 1 : n
-        R_gt(:,:,i) = (images_gt(i).R)';
-        R_eval(:,:,i) = (images_eval(i).R)';
-        t_gt(:,i) = -(images_gt(i).R)'*images_gt(i).t;
-        t_eval(:,i) = -(images_eval(i).R)'*images_eval(i).t;
+    
+    image_keys = keys(images_eval);
+    for ind = 1 : n
+        i = image_keys{ind};
+        R_gt(:,:,ind) = (images_gt(i).R)';
+        R_eval(:,:,ind) = (images_eval(i).R)';
+        t_gt(:,ind) = -(images_gt(i).R)'*images_gt(i).t;
+        t_eval(:,ind) = -(images_eval(i).R)'*images_eval(i).t;
     end
     
     % find first estimation value by solving R_eval(i) = R0 * R_gt(i) system
