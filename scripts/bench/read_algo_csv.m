@@ -1,3 +1,13 @@
+% reads csv files in format:
+%       param_1 ... param_n algo_name
+% where algo_name is in {'p35p', 'p4p', 'real'}
+%
+% Input:
+% filename -- full file name (ex.: 'comparison_results/file_name.csv')
+% Output:
+% 3 respective tables with the same column structure
+%       param_1 ... param_n
+
 function [p35p, p4p, real] = read_algo_csv(file_name)
     t = readmatrix(file_name,'OutputType','char');
     data_size = size(t);
@@ -26,19 +36,19 @@ function [p35p, p4p, real] = read_algo_csv(file_name)
     for ind = 1 : n
         if strcmp(t{ind, end}, 'p35p')
             for indind = 1 : param_num
-                p35p(i, indind) = str2num(t{ind, indind});
-                i = i + 1;
+                p35p(i, indind) = str2double(t{ind, indind});
             end
+            i = i + 1;
         elseif strcmp(t{ind, end}, 'p4p')
             for indind = 1 : param_num
-                p4p(j, indind) = str2num(t{ind, indind});
-                j = j + 1;
+                p4p(j, indind) = str2double(t{ind, indind});
             end
+            j = j + 1;
         elseif strcmp(t{ind, end}, 'real')
             for indind = 1 : param_num
-                real(k, indind) = str2num(t{ind, indind});
-                k = k + 1;
+                real(k, indind) = str2double(t{ind, indind});
             end
+            k = k + 1;
         end
     end
 end
