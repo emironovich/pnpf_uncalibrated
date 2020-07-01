@@ -1,33 +1,22 @@
 % function for evaluating absolute rotation and absolute translation from  
 % gt cootdinate system to sfm coordinate system
-% Input:
-% images_gt  -- ground truth data
-% images_eval -- evaluated data
-% all in format of colmap's read_model() output
 %
-% Output:
+% INPUT:  R_*    3 x 3 x n
+%         t_*    3 x n
+%         gt, eval -- ground-truth and evaluated parameters
+%         data on the same page(R)/column(t) must correspond to the same
+%         image
+%
+% OUTPUT:
 % R, t, alpha trnasform gt cootdinate system in sfm coordinate system as
 % x_sfm = alpha*R*x_gt + t
 % resnorm_R, resnorm_t are squared 2-norms of the residuals at R and
 % [alpha;t] respectively
 
 
-function [R, t, alpha, resnorm_R, resnorm_t] = find_absolute_Rt(images_gt, images_eval)
-%     assert(length(images_gt) == length(images_eval));
-    n = length(images_eval);
-    R_gt = zeros(3,3,n);
-    R_eval = zeros(3,3,n);
-    t_gt = zeros(3,n);
-    t_eval = zeros(3,n);
-    
-    image_keys = keys(images_eval);
-    for ind = 1 : n
-        i = image_keys{ind};
-        R_gt(:,:,ind) = (images_gt(i).R)';
-        R_eval(:,:,ind) = (images_eval(i).R)';
-        t_gt(:,ind) = -(images_gt(i).R)'*images_gt(i).t;
-        t_eval(:,ind) = -(images_eval(i).R)'*images_eval(i).t;
-    end
+function [R, t, alpha, resnorm_R, resnorm_t] = find_absolute_Rt(R_gt, R_eval, t_gt, t_eval)
+    sz = size(t_eval);
+    n = sz(2);
     
     % find first estimation value by solving R_eval(i) = R0 * R_gt(i) system
     R_eval_stacked = zeros(3*n,3);
