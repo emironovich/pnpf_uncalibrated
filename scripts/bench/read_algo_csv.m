@@ -9,6 +9,12 @@
 %       param_1 ... param_n
 
 function [p35p, p4p, real] = read_algo_csv(file_name)
+    if ~isfile(file_name)
+        p35p = [];
+        p4p = [];
+        real = [];
+        return;
+    end
     t = readmatrix(file_name,'OutputType','char');
     data_size = size(t);
     n = data_size(1);

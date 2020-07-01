@@ -24,10 +24,12 @@ function [means, f_diffs, R_diffs, t_diffs] = make_bench_abs(solver_name, input_
 %     ind_f = f_diffs < 1;
 %     ind_t = t_diffs < 70;
 %     ind_inliers = ind_f & ind_t;
+
+    ind_inliers = f_diffs < 100;
     
-%     f_diffs = f_diffs(ind_inliers);
-%     R_diffs = R_diffs(ind_inliers);
-%     t_diffs = t_diffs(ind_inliers);
+    f_diffs = f_diffs(ind_inliers);
+    R_diffs = R_diffs(ind_inliers);
+    t_diffs = t_diffs(ind_inliers);
     
     if length(f_diffs) >= 5
         fin_f = fopen([output_file_name '_f.csv'], 'a');

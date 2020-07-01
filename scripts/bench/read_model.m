@@ -39,7 +39,8 @@ end
 
 cameras = read_cameras([path 'cameras.txt']);
 images = read_images([path 'images.txt']);
-points3D = read_points3D([path 'points3D.txt']);
+points3D = {};
+%points3D = read_points3D([path 'points3D.txt']);
 
 end
 
