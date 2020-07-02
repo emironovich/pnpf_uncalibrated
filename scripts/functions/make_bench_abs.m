@@ -13,11 +13,18 @@
 % respectively where columns are supposed: f,algo, and R,t,algo
 
 
-function [means, f_diffs, R_diffs, t_diffs] = make_bench_abs(solver_name, input_path_eval, input_path_gt, output_file_name)
+function [means, f_diffs, R_diffs, t_diffs] = make_bench_abs(solver_name, input_path_eval, input_path_gt, output_file_name, before_ba_flag)
     [cameras_eval, images_eval, ~] = read_model(input_path_eval);
     [cameras_gt, images_gt, ~] = read_model(input_path_gt);
-    
+
     [f_diffs, R_diffs, t_diffs] = cmp_solver_absolute_transformation(cameras_gt, images_gt, cameras_eval, images_eval);
+    
+    if nargin == 5
+        if before_ba_flag
+            [cameras_before_ba, images_before_ba] = read_before_ba(input_path_eval, cameras_eval, images_eval);
+            [f_diffs, R_diffs, t_diffs] = cmp_solver_absolute_transformation(cameras_gt, images_gt, cameras_before_ba, images_before_ba);
+        end
+    end
         
     means = [mean(f_diffs); mean(R_diffs); mean(t_diffs)];
     

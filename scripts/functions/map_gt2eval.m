@@ -15,8 +15,10 @@ function [f_gt, f_eval, R_gt, R_eval, t_gt, t_eval] = map_gt2eval(cameras_gt, im
         k = image_gt_keys{i};
         image_copy = images_gt(k);
         gt_name = images_gt(k).name;
-        image_copy.name = gt_name(25:end);
-        images_gt(k) = image_copy;
+        if length(gt_name) >= 25 && strcmp(gt_name(1:24), 'dslr_images_undistorted/')
+            image_copy.name = gt_name(25:end);
+            images_gt(k) = image_copy;
+        end
     end
     
     m_gt = model_data2joint_map(cameras_gt, images_gt);

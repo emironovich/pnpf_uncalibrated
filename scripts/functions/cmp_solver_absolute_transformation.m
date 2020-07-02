@@ -15,7 +15,7 @@ function [f_diff, R_diff, t_diff, resnorm_R_abs, resnorm_t_abs] = cmp_solver_abs
     n = length(images_eval);
 
     [f_gt, f_eval, R_gt, R_eval, t_gt, t_eval] = map_gt2eval(cameras_gt, images_gt, cameras_eval, images_eval);
-    
+
     [R_abs, t_abs, alpha, resnorm_R_abs, resnorm_t_abs] = find_absolute_Rt(R_gt, R_eval, t_gt, t_eval);
     
     
@@ -32,17 +32,17 @@ function [f_diff, R_diff, t_diff, resnorm_R_abs, resnorm_t_abs] = cmp_solver_abs
     median_rel = median(rel_t);
     
     for ind = 1 : n
-        fx_gt = f_gt(i, 1);
-        fy_gt = f_gt(i, 2);
-        fx_eval = f_eval(i, 1);
-        fy_eval = f_eval(i, 2);
+        fx_gt = f_gt(ind, 1);
+        fy_gt = f_gt(ind, 2);
+        fx_eval = f_eval(ind, 1);
+        fy_eval = f_eval(ind, 2);
 
         f_diff(ind) = (abs(fx_gt - fx_eval) + abs(fy_gt - fy_eval)) / abs(fx_gt + fy_gt);
 
-        curr_R_eval = squeeze(R_eval(:,:,i));
-        curr_t_eval = t_eval(:, i);
-        curr_R_gt = squeeze(R_gt(:,:,i));
-        curr_t_gt = t_gt(:, i);
+        curr_R_eval = squeeze(R_eval(:,:,ind));
+        curr_t_eval = t_eval(:, ind);
+        curr_R_gt = squeeze(R_gt(:,:,ind));
+        curr_t_gt = t_gt(:, ind);
         
         R_diff(ind) = rad2deg(abs(acos((trace(curr_R_eval'*curr_R_gt*R_abs')-1)/2)));
         t_diff(ind) = norm(-alpha*R_abs*curr_R_gt'*curr_t_gt + t_abs + curr_R_eval'*curr_t_eval)/(abs(alpha)*median_rel);

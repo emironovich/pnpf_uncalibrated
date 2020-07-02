@@ -1,5 +1,5 @@
-path = 'scripts/bench/courtyard/data/ransac_09_03';
-path_gt = 'scripts/bench/courtyard/data';
+path = 'data/eth3d_results_40_140_26_06/loransac/courtyard/p35p/1';
+path_gt = 'data/eth3d_gt/courtyard';
 % [cameras_real, images_real, ~] = read_model([path 'real/1']);
 % [cameras_p35p, images_p35p, ~] = read_model([path 'p35p/1']);
 % [cameras_p4p, images_p4p, ~] = read_model([path 'p4p/1']);
@@ -11,7 +11,7 @@ path_gt = 'scripts/bench/courtyard/data';
 % 
 % [f_diffs, R_diffs, t_diffs] = cmp_solver_absolute_transformation(cameras_gt, images_gt, cameras_real_before_ba, images_real_before_ba);
 
-file_name = 'courtyard_ransac_09_03';
+file_name = 'unnecessary';
 
 fin_f = fopen([output_file_name '_before_ba_f.csv'], 'w');
 fprintf(fin_f, 'f,algo\n');
