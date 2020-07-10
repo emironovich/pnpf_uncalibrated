@@ -8,7 +8,7 @@
 % parameters with the same index correspond to the same camera/image
 % (i.e. R_gt(:,:,5) <-> R_eval(:,:,5)
 
-function [f_gt, f_eval, R_gt, R_eval, t_gt, t_eval] = map_gt2eval(cameras_gt, images_gt, cameras_eval, images_eval)
+function [f_gt, f_eval, R_gt, R_eval, t_gt, t_eval, m_eval_keys] = map_gt2eval(cameras_gt, images_gt, cameras_eval, images_eval)
     image_gt_keys = keys(images_gt);
     % remove 'dslr_images_undistorted/' prefix
     for i = 1 : length(image_gt_keys)
