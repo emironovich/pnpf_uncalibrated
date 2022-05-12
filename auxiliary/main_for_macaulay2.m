@@ -6,7 +6,7 @@ p = 31991; %modul
 
 [X, x, y, ~, ~, ~] = generate_data_for_macaulay();
 
-R = init_R();
+R = init_R('double');
 F = init_F(x, y, X, R);
 F = mod(F, p);
 G4 = equations_for_groebner(F);
